@@ -1,0 +1,14 @@
+C:\Users\guido_leen\source\repos\WebApplicationSERVER\WebApplicationSERVER\bin\Debug\netcoreapp2.1\WebApplicationSERVER.deps.json
+C:\Users\guido_leen\source\repos\WebApplicationSERVER\WebApplicationSERVER\bin\Debug\netcoreapp2.1\WebApplicationSERVER.runtimeconfig.json
+C:\Users\guido_leen\source\repos\WebApplicationSERVER\WebApplicationSERVER\bin\Debug\netcoreapp2.1\WebApplicationSERVER.runtimeconfig.dev.json
+C:\Users\guido_leen\source\repos\WebApplicationSERVER\WebApplicationSERVER\bin\Debug\netcoreapp2.1\WebApplicationSERVER.dll
+C:\Users\guido_leen\source\repos\WebApplicationSERVER\WebApplicationSERVER\bin\Debug\netcoreapp2.1\WebApplicationSERVER.pdb
+C:\Users\guido_leen\source\repos\WebApplicationSERVER\WebApplicationSERVER\obj\Debug\netcoreapp2.1\WebApplicationSERVER.csproj.CoreCompileInputs.cache
+C:\Users\guido_leen\source\repos\WebApplicationSERVER\WebApplicationSERVER\obj\Debug\netcoreapp2.1\WebApplicationSERVER.RazorAssemblyInfo.cache
+C:\Users\guido_leen\source\repos\WebApplicationSERVER\WebApplicationSERVER\obj\Debug\netcoreapp2.1\WebApplicationSERVER.RazorAssemblyInfo.cs
+C:\Users\guido_leen\source\repos\WebApplicationSERVER\WebApplicationSERVER\obj\Debug\netcoreapp2.1\WebApplicationSERVER.AssemblyInfoInputs.cache
+C:\Users\guido_leen\source\repos\WebApplicationSERVER\WebApplicationSERVER\obj\Debug\netcoreapp2.1\WebApplicationSERVER.AssemblyInfo.cs
+C:\Users\guido_leen\source\repos\WebApplicationSERVER\WebApplicationSERVER\obj\Debug\netcoreapp2.1\WebApplicationSERVER.RazorTargetAssemblyInfo.cache
+C:\Users\guido_leen\source\repos\WebApplicationSERVER\WebApplicationSERVER\obj\Debug\netcoreapp2.1\WebApplicationSERVER.dll
+C:\Users\guido_leen\source\repos\WebApplicationSERVER\WebApplicationSERVER\obj\Debug\netcoreapp2.1\WebApplicationSERVER.pdb
+C:\Users\guido_leen\source\repos\WebApplicationSERVER\WebApplicationSERVER\obj\Debug\netcoreapp2.1\WebApplicationSERVER.csprojAssemblyReference.cache

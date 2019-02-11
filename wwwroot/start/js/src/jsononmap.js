@@ -8,17 +8,18 @@ export class JsonOnMap
     {
         this.jsonres = jsonres;
     }
-    putTheJsonOnMap(vectorsource)
+    putTheJsonOnMap(osMap, osMapName)
     {
+        var monmap = new MarkersOnMap();
+                
         xmlhttp.onreadystatechange = function()
         {
             if(this.readyState == 4 && this.status == 200)
             {
-                // var jsonObj = JSON.parse(xmlhttp.responseText);
+                var jsonObj = JSON.parse(xmlhttp.response); // JSON.parse(xmlhttp.response);
+                jsonObj = JSON.parse(jsonObj); // Parse JSON twice
 
-                var monmap = new MarkersOnMap();
-                monmap.putMarkerOnMap(vectorsource, OBJWEG);
-                // divobj.innerHTML = OBJWEG[0].latitude;
+                monmap.putMarkersOnMap(osMap, osMapName, jsonObj);
             }
         }
         xmlhttp.open("GET", this.jsonres, true);
@@ -26,8 +27,7 @@ export class JsonOnMap
     }
 }
 
+// TEST Object
 var OBJWEG = [
-    {    "latitude": 52.072,    "longitude": 5.184,    "locid": 1  },  {    "latitude": 52.3,    "longitude": 2.2,    "locid": 3  },  {    "latitude": 52.3,    "longitude": 2.2,    "locid": 4  }
+    {    "latitude": 52.072,    "longitude": 5.184,    "locid": 1  },  {    "latitude": 52.03,    "longitude": 5.2,    "locid": 3  },  {    "latitude": 51.3,    "longitude": 5.2,    "locid": 4  }
 ];
-
-// 52.072852, 5.184728

@@ -1,4 +1,9 @@
 import { JsonOnMap } from './jsononmap';
+import { Marker } from './marker';
+import { PopUp } from './popup';
+import { OverLayInfo } from './overlayinfo';
+import { EventsMap } from './eventsmap';
+
 // import VectorSource from 'ol/source/Vector';
 
 export class OsmapStart
@@ -8,8 +13,9 @@ export class OsmapStart
         this.map;
     }
 
-    setupOSMap(strDiv, lat, lon, zoomf)
+    setupOSMap(jsonAdres, strDiv, lat, lon, zoomf)
     {
+        // Create the map
         this.map = new ol.Map({
             target: strDiv,
             layers: [
@@ -23,28 +29,11 @@ export class OsmapStart
             })
           });
 
-          // Test
-          var jsonOnMap = new JsonOnMap("jsonApi");
+          // Put the Json on the map
+          var jsonMap = new JsonOnMap(jsonAdres);
+          jsonMap.putTheJsonOnMap(this.map, strDiv);
 
-        var vectorSrc = new ol.source.Vector({});
-        jsonOnMap.putTheJsonOnMap(vectorSrc);
-
-        var vectorLr = new ol.layer.Vector({
-            source: vectorSrc
-        });
-        this.map.addLayer(vectorLr);
-    }
-
-    addVectorSourceToMap(jsonApi)
-    {
-        var jsonOnMap = new JsonOnMap(jsonApi);
-
-        var vectorSrc = new ol.source.Vector({});
-        jsonOnMap.putTheJsonOnMap(vectorSrc);
-
-        var vectorLr = new ol.layer.Vector({
-            source: vectorSrc
-        });
-        this.map.addLayer(vectorLr);
+          // Add the event Listeners to the map
+          var eventsMap = new EventsMap( this.map, strDiv );
     }
 }

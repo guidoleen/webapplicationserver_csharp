@@ -1,19 +1,16 @@
-import { MarkersFeature } from './markersfeature';
+import { Marker } from './marker';
+import { OverLayInfo } from './overlayinfo';
 
 export class MarkersOnMap
 {
-     putMarkerOnMap(_vectorsource, _jsonObj)
-     {
-        //Loop through the markers array
+    constructor(){}
 
-        for (var i=0; i<_jsonObj.length; i++) {
-       
-            var lat = _jsonObj[i].latitude;
-            var lon = _jsonObj[i].longitude;
-
-            var feature  = new MarkersFeature(i, lat, lon);
-                        
-            _vectorsource.addFeatures(feature);
-         }                        
-     }
+    putMarkersOnMap(osMap, osMapName, arrJson)
+    {
+        for (let index = 0; index < arrJson.length; index++) 
+        {
+            var marker = new Marker();
+            marker.setNewMarker( new OverLayInfo(osMap, osMapName, arrJson[index].locid, arrJson[index].latitude, arrJson[index].longitude) );
+        }
+    }
 }

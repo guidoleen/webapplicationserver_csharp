@@ -2,14 +2,18 @@
 <html>
 <head>
     <meta charset="UTF-8" />
-    <!--  <script src="js/babel/browser-polyfill.min.js"></script> -->
+    <link rel="stylesheet" href="css/core.css"></link>
+    <link rel="stylesheet" href="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/css/ol.css" type="text/css">
+    <script src="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/build/ol.js"></script>
+    
 </head>
-  <body>
-    <div id="start"></div>
-    <script src="js/standaard.js"></script>
-    <script>
-        // main("/start/js/bla.json", "start");
-        main("http://localhost:63744/api/location", "start");
-        </script>
-  </body>
+<body>
+    <!-- niet nodig: <div id="start" class="map-overlay-markers"></div> -->
+    <div id="osmap" class="cls-iframe"></div>
+    <div id="popup" class="ol-popup"><p>You clicked here:</p><code>76° 19′ 08″ S 164° 48′ 45″ W</code></div>
+    
+
+    <script src="js/build/build.js"></script>
+
+</body>
 </html>

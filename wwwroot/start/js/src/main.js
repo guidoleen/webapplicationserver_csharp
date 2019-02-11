@@ -1,8 +1,5 @@
-import { JsonOnMap } from './jsononmap';
 import { OsmapStart } from './osmapstart';
-import { MarkersFeature } from './markersfeature';
-import { MarkersOnMap } from './markersonmap';
-
+import { EventsMap } from './eventsmap';
 
 class Main
 {
@@ -15,15 +12,13 @@ class Main
     setupOSMapOnPage()
     {
         var osmap = new OsmapStart(); 
-        osmap.setupOSMap("osmap", 5, 52, 10);
-        // osmap.addVectorSourceToMap(this.jsonAdres);
+        osmap.setupOSMap(this.jsonAdres, "osmap", 5, 52, 8);
     }
 }
 
 var m = new Main("http://localhost:63744/api/location");
 m.setupOSMapOnPage();
 
-
-
+// https://openlayers.org/en/latest/examples/overlay.html
 // https://code.lengstorf.com/learn-rollup-js/
 // browserify main.js -o bundle.js

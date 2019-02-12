@@ -33,7 +33,8 @@ export class OsmapStart
           var jsonMap = new JsonOnMap(jsonAdres);
           jsonMap.putTheJsonOnMap(this.map, strDiv);
 
-          // Add the event Listeners to the map
+          // Add the popup and event Listeners to the map
           var eventsMap = new EventsMap( this.map, strDiv );
+          eventsMap.addPopUpInMap();
     }
 }

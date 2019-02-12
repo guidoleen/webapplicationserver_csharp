@@ -1,26 +1,51 @@
 import { OverLayInfo } from './overlayinfo';
+import { MarkersEvents } from './markersevents';
 
 export class PopUp
 {
-    constructor(){}
+    constructor(popupid)
+    {
+        this.overlay;
+        this.popupdiv = this.createPopUpDiv(popupid);
+        this.popupoverl = this.createPopUpOverlay();
+    }
+
+    createPopUpDiv(popupid)
+    {
+        return document.getElementById(popupid);
+    }
+
+    createPopUpOverlay()
+    {
+          return new ol.Overlay({
+            element: this.popupdiv
+          });
+    }
 
     setPopUpinMap( overLayInfo, strText ) // osMap, osMapName, divPopUp, lat, lon)
     {
-        var mapDiv = document.getElementById(overLayInfo.osMapName);
-        var popDiv = document.getElementById(overLayInfo.iNo);
+        this.popupid = overLayInfo.iNo;
 
-        mapDiv.appendChild( popDiv );
+        var pos = ol.proj.fromLonLat([overLayInfo.lat, overLayInfo.lon]); // ol.proj.transform([overLayInfo.lat, overLayInfo.lon], 'EPSG:4326', 'EPSG:3857'); // 
+        this.popupoverl.setPosition(pos);
 
-        var pos = ol.proj.fromLonLat([overLayInfo.lon, overLayInfo.lat]); // ol.proj.transform([lat, lon], 'EPSG:4326', 'EPSG:3857');
-        var popup = new ol.Overlay({
-          position: pos,
-          positioning: 'center-center',
-          element: document.getElementById(overLayInfo.divPopUp)
+          overLayInfo.osMap.addOverlay(this.popupoverl);
+    
+        this.popupdiv.innerHTML = this.setCloseX() + strText;
+
+        document.getElementById("popup_closer").addEventListener("click", function(){
+          new MarkersEvents().markersHidePopup(overLayInfo.iNo);
         });
+        return;
+    }
 
-        popDiv.innerHTML = strText;
-        overLayInfo.osMap.addOverlay(popup);
+    get getPopUp()
+    {
+        return this.popupoverl; // document.getElementById(this.popupid);
+    }
 
-        return popup;
+    setCloseX()
+    {
+        return "<div id='popup_closer' class='ol-popup-closer'></div>";
     }
 }

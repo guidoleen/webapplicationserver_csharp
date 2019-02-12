@@ -13,7 +13,6 @@ export class Marker
 
         mapDiv.appendChild(divMarker);
 
-        var posJson = { "latitude" : overLayInfo.lon, "longitude" : overLayInfo.lat };
         var pos = ol.proj.fromLonLat([overLayInfo.lon, overLayInfo.lat]); // ol.proj.transform([lat, lon], 'EPSG:4326', 'EPSG:3857');
           var marker = new ol.Overlay({
             position: pos,
@@ -21,7 +20,7 @@ export class Marker
             element: document.getElementById(overLayInfo.iNo)
           });
 
-          divMarker.addEventListener("click", function(){ new EventsMap().onMarkerClick(this.id, posJson); }); // Event Listener for popup
+          divMarker.addEventListener("click", function(){ new EventsMap().onMarkerClick(overLayInfo, this.id); }); // Event Listener for popup
 
           overLayInfo.osMap.addOverlay(marker); // Adds the marker on the map
     }

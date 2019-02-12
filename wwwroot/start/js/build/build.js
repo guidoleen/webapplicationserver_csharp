@@ -62,26 +62,69 @@
         }
     }
 
-    class PopUp
+    class MarkersEvents
     {
         constructor(){}
+        
+        markerShowPopup(id)
+        {
+            var popUpDiv = document.getElementById(id);
+            popUpDiv.style.display = "block";
+        }
+
+        markersHidePopup(id)
+        {
+            var popUpDiv = document.getElementById(id);
+            popUpDiv.style.display = "none";
+        }
+    }
+
+    class PopUp
+    {
+        constructor(popupid)
+        {
+            this.overlay;
+            this.popupdiv = this.createPopUpDiv(popupid);
+            this.popupoverl = this.createPopUpOverlay();
+        }
+
+        createPopUpDiv(popupid)
+        {
+            return document.getElementById(popupid);
+        }
+
+        createPopUpOverlay()
+        {
+              return new ol.Overlay({
+                element: this.popupdiv
+              });
+        }
 
         setPopUpinMap( overLayInfo, strText ) // osMap, osMapName, divPopUp, lat, lon)
         {
-            var mapDiv = document.getElementById(overLayInfo.osMapName);
-            var popDiv = document.getElementById(overLayInfo.iNo);
+            this.popupid = overLayInfo.iNo;
 
-            mapDiv.appendChild( popDiv );
+            var pos = ol.proj.fromLonLat([overLayInfo.lat, overLayInfo.lon]); // ol.proj.transform([overLayInfo.lat, overLayInfo.lon], 'EPSG:4326', 'EPSG:3857'); // 
+            this.popupoverl.setPosition(pos);
 
-            var pos = ol.proj.fromLonLat([overLayInfo.lon, overLayInfo.lat]); // ol.proj.transform([lat, lon], 'EPSG:4326', 'EPSG:3857');
-            var popup = new ol.Overlay({
-              position: pos,
-              positioning: 'center-center',
-              element: document.getElementById(overLayInfo.divPopUp)
+              overLayInfo.osMap.addOverlay(this.popupoverl);
+        
+            this.popupdiv.innerHTML = this.setCloseX() + strText;
+
+            document.getElementById("popup_closer").addEventListener("click", function(){
+              new MarkersEvents().markersHidePopup(overLayInfo.iNo);
             });
+            return;
+        }
 
-            popDiv.innerHTML = strText;
-            overLayInfo.osMap.addOverlay(popup);
+        get getPopUp()
+        {
+            return this.popupoverl; // document.getElementById(this.popupid);
+        }
+
+        setCloseX()
+        {
+            return "<div id='popup_closer' class='ol-popup-closer'></div>";
         }
     }
 
@@ -91,14 +134,26 @@
         {
             this.map = map;
             this.mapId = mapId;
+            this.popupId = "popup";
+            this.popup = new PopUp(this.popupId);
+            this.lonCorr = 0.5;
         }
-
-        onMarkerClick(id, pos)
+        
+        addPopUpInMap()
         {
-            var pop = new PopUp();
-            pop.setPopUpinMap( new OverLayInfo( this.map, this.mapId, "popup", pos.latitude, pos.longitude ), "Blalalala" );
-
+            this.popup.setPopUpinMap( new OverLayInfo( this.map, this.mapId, this.popupId, 5, 52 ), "Dus" ); // (osMap, osMapName, iNo, lat, lon)
+            return;
         }
+
+        onMarkerClick(overLayInfo, id, pos)
+        {
+            this.popup.setPopUpinMap( new OverLayInfo( overLayInfo.osMap, overLayInfo.osMapName, this.popupId, (overLayInfo.lon - this.lonCorr), overLayInfo.lat ), id ); // (osMap, osMapName, iNo, lat, lon)
+            new MarkersEvents().markerShowPopup(this.popupId);
+            
+            return;
+            // console.log(this.popup.getPopUp.getElement());
+        }
+        // EventListeners
     }
 
     class Marker
@@ -113,7 +168,6 @@
 
             mapDiv.appendChild(divMarker);
 
-            var posJson = { "latitude" : overLayInfo.lon, "longitude" : overLayInfo.lat };
             var pos = ol.proj.fromLonLat([overLayInfo.lon, overLayInfo.lat]); // ol.proj.transform([lat, lon], 'EPSG:4326', 'EPSG:3857');
               var marker = new ol.Overlay({
                 position: pos,
@@ -121,7 +175,7 @@
                 element: document.getElementById(overLayInfo.iNo)
               });
 
-              divMarker.addEventListener("click", function(){ new EventsMap().onMarkerClick(this.id, posJson); }); // Event Listener for popup
+              divMarker.addEventListener("click", function(){ new EventsMap().onMarkerClick(overLayInfo, this.id); }); // Event Listener for popup
 
               overLayInfo.osMap.addOverlay(marker); // Adds the marker on the map
         }
@@ -200,8 +254,9 @@
               var jsonMap = new JsonOnMap(jsonAdres);
               jsonMap.putTheJsonOnMap(this.map, strDiv);
 
-              // Add the event Listeners to the map
+              // Add the popup and event Listeners to the map
               var eventsMap = new EventsMap( this.map, strDiv );
+              eventsMap.addPopUpInMap();
         }
     }
 

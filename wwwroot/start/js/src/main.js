@@ -1,5 +1,7 @@
 import { OsmapStart } from './osmapstart';
 import { EventsMap } from './eventsmap';
+import { UtilFindAdresBarParam } from './utilfindadresbarparam';
+import { UpdateLocation } from './updatelocation';
 
 class Main
 {
@@ -16,8 +18,14 @@ class Main
     }
 }
 
-var m = new Main("http://localhost:63744/api/location");
+var url = "http://localhost:63744/api/location/";
+var utilparm = new UtilFindAdresBarParam(); // Get the id from parameter in url bar
+var m = new Main(url + utilparm.findGetParameter('klantid'));
 m.setupOSMapOnPage();
+
+// TEST
+var updte = new UpdateLocation();
+updte.updateLocation(url + utilparm.findGetParameter('klantid'), 1, "berTitle", "berText");
 
 // https://openlayers.org/en/latest/examples/overlay.html
 // https://code.lengstorf.com/learn-rollup-js/

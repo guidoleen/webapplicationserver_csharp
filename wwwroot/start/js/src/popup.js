@@ -22,7 +22,7 @@ export class PopUp
           });
     }
 
-    setPopUpinMap( overLayInfo, strText ) // osMap, osMapName, divPopUp, lat, lon)
+    setPopUpinMap( overLayInfo ) // osMap, osMapName, divPopUp, lat, lon)
     {
         this.popupid = overLayInfo.iNo;
 
@@ -31,10 +31,10 @@ export class PopUp
 
           overLayInfo.osMap.addOverlay(this.popupoverl);
     
-        this.popupdiv.innerHTML = this.setCloseX() + strText;
+        this.popupdiv.innerHTML = this.setCloseX() + this.setH3(overLayInfo.berTitle) +  this.setP(overLayInfo.berText) + this.setSaveForm("strApiUrl");
 
         document.getElementById("popup_closer").addEventListener("click", function(){
-          new MarkersEvents().markersHidePopup(overLayInfo.iNo);
+            new MarkersEvents().markersHidePopup(overLayInfo.iNo);
         });
         return;
     }
@@ -47,5 +47,28 @@ export class PopUp
     setCloseX()
     {
         return "<div id='popup_closer' class='ol-popup-closer'></div>";
+    }
+
+    setH3(strTitle)
+    {
+        return "<h3 class='ol-popup-h3'>" + strTitle + "</h3>";
+    }
+
+    setP(strText)
+    {
+        return "<p class='ol-popup-p'>" + strText + "</p>";
+    }
+
+    setSaveForm(strApiUrl)
+    {
+        var strForm = "<form method='put' action='" + strApiUrl + "'>";
+        strForm += "<span class='input-span'>Titel</span>";
+        strForm += "<input class='input-txt mrg-bottom' type='text' name='title'>";
+        strForm += "<span class='input-span'>Bericht</span>";
+        strForm += "<input class='input-txt mrg-bottom' type='text' name='bericht'>";
+        strForm += "<input class='input-button' type='button' value='Save' >";
+        strForm += "</form>";
+
+        return strForm;
     }
 }

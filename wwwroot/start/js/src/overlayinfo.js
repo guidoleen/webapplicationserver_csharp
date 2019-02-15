@@ -1,12 +1,15 @@
 export class OverLayInfo
 {
-    constructor(osMap, osMapName, iNo, lat, lon)
+    constructor(osMap, osMapName, iNo, lat, lon, berTitle, berText, berId)
     {
         this.osMap = osMap; 
         this.osMapName = osMapName;
         this.iNo = iNo;
         this.lat = lat; 
         this.lon = lon;
+        this.berTitle = berTitle;
+        this.berText = berText;
+        this.berId = berId;
     }
 
     get osMap()
@@ -56,5 +59,35 @@ export class OverLayInfo
     {
         this._lon = lon;
         return;
+    }
+
+    get berTitle()
+    {
+        return this._berTitle;
+    }
+
+    set berTitle(berTitle)
+    {
+        this._berTitle = berTitle;
+    }
+
+    get berText()
+    {
+        return this._berText;
+    }
+
+    set berText(berText)
+    {
+        this._berText = berText;
+    }
+
+    get berId()
+    {
+        return this._berId;
+    }
+
+    set berId(berId)
+    {
+        this._berId = berId;
     }
 }

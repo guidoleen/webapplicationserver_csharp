@@ -20,7 +20,7 @@ export class Marker
             element: document.getElementById(overLayInfo.iNo)
           });
 
-          divMarker.addEventListener("click", function(){ new EventsMap().onMarkerClick(overLayInfo, this.id); }); // Event Listener for popup
+          divMarker.addEventListener("click", function(){ new EventsMap().onMarkerClick(overLayInfo); }); // Event Listener for popup
 
           overLayInfo.osMap.addOverlay(marker); // Adds the marker on the map
     }

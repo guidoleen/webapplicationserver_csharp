@@ -26,6 +26,7 @@ namespace WebApplicationSERVER
             {
                 app.UseDeveloperExceptionPage();
             }
+            // app.UseCors("AllowWebApp");
 
             app.UseStaticFiles(); // For the wwwroot folder
 

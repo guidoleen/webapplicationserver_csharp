@@ -1,3 +1,13 @@
+html, body
+{
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px; 
+}
+.mrg-bottom
+{
+  margin-bottom: 15px;
+}
+
 .cls-iframe
 {
     width: 100%;
@@ -7,6 +17,18 @@
     top: 0px;
     left: 0px;
     z-index: 0;
+}
+.content
+{
+  position: absolute;
+  top: 600px;
+  width: 100%;
+  left: 0px;
+}
+.content-center
+{
+    width: 50%;
+    margin: 0 auto;
 }
 .map-overlay-marker
 {
@@ -31,10 +53,12 @@
     padding: 15px;
     border-radius: 10px;
     border: 1px solid #cccccc;
-    /* bottom: 12px;
-    left: -50px; */
+    bottom: 12px;
+    left: 0px;
     min-width: 280px;
     z-index: 3;
+    display: none;
+    transition: all 0.5s;
   }
   .ol-popup:after, .ol-popup:before 
   {
@@ -71,4 +95,73 @@
   {
     content: "✖";
     z-index: 4;
+    cursor: pointer;
+  }
+  .ol-popup-closer:hover
+  {
+    opacity: 0.5;
+  }
+
+  .ol-popup-h3
+  {
+
+  }
+
+  .ol-popup-p
+  {
+
+  }
+
+  .butt-regular {
+    background-color:#44c767;
+    -moz-border-radius:28px;
+    -webkit-border-radius:28px;
+    border-radius:28px;
+    border:none;
+    display:inline-block;
+    cursor:pointer;
+    color:#ffffff;
+    font-size:17px;
+    padding:16px 31px;
+    text-decoration:none;
+  }
+  .butt-regular:hover {
+    background-color:#5cbf2a;
+  }
+  .butt-regular:active {
+    position:relative;
+    top:1px;
+  }
+  .input-txt
+  {
+    border: 0;
+    border-bottom: solid 1px #8a8a8a;
+    width: 280px;
+    height: 20px;
+  }
+  .input-span
+  {
+    display: block;
+  }
+  .input-button
+  {
+    background-color:#ce0090;
+    -moz-border-radius:18px;
+    -webkit-border-radius:18px;
+    border-radius:18px;
+    border:none;
+    display:block;
+    cursor:pointer;
+    color:#ffffff;
+    font-size:1.0em;
+    padding:6px 20px;
+    text-decoration:none;
+  }
+  .input-button:active
+  {
+    background-color:#cf7bb6;
+  }
+  .input-button:hover
+  {
+    background-color:#cf7bb6;
   }

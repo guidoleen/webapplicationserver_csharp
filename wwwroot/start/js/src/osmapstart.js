@@ -11,11 +11,19 @@ export class OsmapStart
     constructor()
     {
         this.map;
+        this.view;
     }
 
     setupOSMap(jsonAdres, strDiv, lat, lon, zoomf)
     {
         // Create the map
+        // Create view first into the map
+        this.view = new ol.View({
+          // projection: "EPSG:4326",
+          center: ol.proj.fromLonLat([lat, lon]),
+          zoom: zoomf
+        });
+        // The Map
         this.map = new ol.Map({
             target: strDiv,
             layers: [
@@ -23,10 +31,7 @@ export class OsmapStart
                 source: new ol.source.OSM()
               })
             ],
-            view: new ol.View({
-              center: ol.proj.fromLonLat([lat, lon]),
-              zoom: zoomf
-            })
+            view: this.view
           });
 
           // Put the Json on the map
@@ -36,5 +41,8 @@ export class OsmapStart
           // Add the popup and event Listeners to the map
           var eventsMap = new EventsMap( this.map, strDiv );
           eventsMap.addPopUpInMap();
+
+          // Add the eventlisteners
+          eventsMap.addTheEventListeners( new OverLayInfo( this.map, strDiv ), this.view );
     }
 }

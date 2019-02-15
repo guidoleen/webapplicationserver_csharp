@@ -3,13 +3,16 @@
 
     class OverLayInfo
     {
-        constructor(osMap, osMapName, iNo, lat, lon)
+        constructor(osMap, osMapName, iNo, lat, lon, berTitle, berText, berId)
         {
             this.osMap = osMap; 
             this.osMapName = osMapName;
             this.iNo = iNo;
             this.lat = lat; 
             this.lon = lon;
+            this.berTitle = berTitle;
+            this.berText = berText;
+            this.berId = berId;
         }
 
         get osMap()
@@ -60,6 +63,36 @@
             this._lon = lon;
             return;
         }
+
+        get berTitle()
+        {
+            return this._berTitle;
+        }
+
+        set berTitle(berTitle)
+        {
+            this._berTitle = berTitle;
+        }
+
+        get berText()
+        {
+            return this._berText;
+        }
+
+        set berText(berText)
+        {
+            this._berText = berText;
+        }
+
+        get berId()
+        {
+            return this._berId;
+        }
+
+        set berId(berId)
+        {
+            this._berId = berId;
+        }
     }
 
     class MarkersEvents
@@ -100,7 +133,7 @@
               });
         }
 
-        setPopUpinMap( overLayInfo, strText ) // osMap, osMapName, divPopUp, lat, lon)
+        setPopUpinMap( overLayInfo ) // osMap, osMapName, divPopUp, lat, lon)
         {
             this.popupid = overLayInfo.iNo;
 
@@ -109,10 +142,10 @@
 
               overLayInfo.osMap.addOverlay(this.popupoverl);
         
-            this.popupdiv.innerHTML = this.setCloseX() + strText;
+            this.popupdiv.innerHTML = this.setCloseX() + this.setH3(overLayInfo.berTitle) +  this.setP(overLayInfo.berText) + this.setSaveForm("strApiUrl");
 
             document.getElementById("popup_closer").addEventListener("click", function(){
-              new MarkersEvents().markersHidePopup(overLayInfo.iNo);
+                new MarkersEvents().markersHidePopup(overLayInfo.iNo);
             });
             return;
         }
@@ -125,6 +158,40 @@
         setCloseX()
         {
             return "<div id='popup_closer' class='ol-popup-closer'></div>";
+        }
+
+        setH3(strTitle)
+        {
+            return "<h3 class='ol-popup-h3'>" + strTitle + "</h3>";
+        }
+
+        setP(strText)
+        {
+            return "<p class='ol-popup-p'>" + strText + "</p>";
+        }
+
+        setSaveForm(strApiUrl)
+        {
+            var strForm = "<form method='put' action='" + strApiUrl + "'>";
+            strForm += "<span class='input-span'>Titel</span>";
+            strForm += "<input class='input-txt mrg-bottom' type='text' name='title'>";
+            strForm += "<span class='input-span'>Bericht</span>";
+            strForm += "<input class='input-txt mrg-bottom' type='text' name='bericht'>";
+            strForm += "<input class='input-button' type='button' value='Save' >";
+            strForm += "</form>";
+
+            return strForm;
+        }
+    }
+
+    class CreateNewMarker
+    {
+        constructor(){}
+
+        putMarkerOnMap(osMap, osMapName, arrJson)
+        {
+            var marker = new Marker();
+            marker.setNewMarker( new OverLayInfo(osMap, osMapName, arrJson.locid, arrJson.latitude, arrJson.longitude, arrJson.bertitel, arrJson.bertext, arrJson.berichtid ) );
         }
     }
 
@@ -145,15 +212,46 @@
             return;
         }
 
-        onMarkerClick(overLayInfo, id, pos)
+        onMarkerClick(overLayInfo, id)
         {
-            this.popup.setPopUpinMap( new OverLayInfo( overLayInfo.osMap, overLayInfo.osMapName, this.popupId, (overLayInfo.lon - this.lonCorr), overLayInfo.lat ), id ); // (osMap, osMapName, iNo, lat, lon)
+            this.popup.setPopUpinMap( new OverLayInfo( overLayInfo.osMap, overLayInfo.osMapName, this.popupId, (overLayInfo.lon - this.lonCorr), overLayInfo.lat, overLayInfo.berTitle, overLayInfo.berText ), id ); // (osMap, osMapName, iNo, lat, lon)
             new MarkersEvents().markerShowPopup(this.popupId);
             
             return;
             // console.log(this.popup.getPopUp.getElement());
         }
+
         // EventListeners
+        // New single Marker on the map
+        onNewMarkerClick( overLayInfo, osView )
+        {
+            document.getElementById("create_newmarker").addEventListener("click", function()
+            {
+                var geolocation = new ol.Geolocation({
+                        projection: osView.getProjection(),
+                        tracking: true
+                    });
+
+                console.log(geolocation.getPosition());
+
+                var arrJson = {
+                    "latitude": 51.1,    
+                    "longitude": 5.1,
+                    "locid": Math.random(),    
+                    "klantid": 0,   
+                    "berichtid": 2,
+                    "bertitel": "Vul deze in...",    
+                    "bertext": "Doe is wat...." 
+                };
+                new CreateNewMarker().putMarkerOnMap( overLayInfo.osMap, overLayInfo.osMapName, arrJson );
+            });
+        }
+
+        // Add the EventListeners on MapStart
+        addTheEventListeners( overLayInfo, osView )
+        {
+            this.onNewMarkerClick( overLayInfo, osView );
+        }
     }
 
     class Marker
@@ -175,7 +273,7 @@
                 element: document.getElementById(overLayInfo.iNo)
               });
 
-              divMarker.addEventListener("click", function(){ new EventsMap().onMarkerClick(overLayInfo, this.id); }); // Event Listener for popup
+              divMarker.addEventListener("click", function(){ new EventsMap().onMarkerClick(overLayInfo); }); // Event Listener for popup
 
               overLayInfo.osMap.addOverlay(marker); // Adds the marker on the map
         }
@@ -193,7 +291,7 @@
             for (let index = 0; index < arrJson.length; index++) 
             {
                 var marker = new Marker();
-                marker.setNewMarker( new OverLayInfo(osMap, osMapName, arrJson[index].locid, arrJson[index].latitude, arrJson[index].longitude) );
+                marker.setNewMarker( new OverLayInfo(osMap, osMapName, arrJson[index].locid, arrJson[index].latitude, arrJson[index].longitude, arrJson[index].bertitel, arrJson[index].bertext, arrJson[index].berichtid ) );
             }
         }
     }
@@ -232,11 +330,19 @@
         constructor()
         {
             this.map;
+            this.view;
         }
 
         setupOSMap(jsonAdres, strDiv, lat, lon, zoomf)
         {
             // Create the map
+            // Create view first into the map
+            this.view = new ol.View({
+              // projection: "EPSG:4326",
+              center: ol.proj.fromLonLat([lat, lon]),
+              zoom: zoomf
+            });
+            // The Map
             this.map = new ol.Map({
                 target: strDiv,
                 layers: [
@@ -244,10 +350,7 @@
                     source: new ol.source.OSM()
                   })
                 ],
-                view: new ol.View({
-                  center: ol.proj.fromLonLat([lat, lon]),
-                  zoom: zoomf
-                })
+                view: this.view
               });
 
               // Put the Json on the map
@@ -257,6 +360,75 @@
               // Add the popup and event Listeners to the map
               var eventsMap = new EventsMap( this.map, strDiv );
               eventsMap.addPopUpInMap();
+
+              // Add the eventlisteners
+              eventsMap.addTheEventListeners( new OverLayInfo( this.map, strDiv ), this.view );
+        }
+    }
+
+    class UtilFindAdresBarParam
+    {
+        constructor(){};
+
+        findGetParameter(parameterName) 
+        {
+            var result = null,
+                tmp = [];
+            window.location.search
+                .substr(1)
+                .split("&")
+                .forEach(function (item) {
+                tmp = item.split("=");
+                if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
+                });
+            return result;
+        }
+    }
+
+    var xmlhttp$1 = new XMLHttpRequest();
+
+    class UpdateLocation
+    {
+        constructor(){}
+
+        updateLocation(url, klantid, berTitle, berText)
+        {
+            
+            var params = klantid + berTitle + berText;
+            
+            // http.withCredentials = true;
+
+            xmlhttp$1.onreadystatechange = function() 
+            {
+                console.log(xmlhttp$1.readyState);
+                console.log(xmlhttp$1.status);
+
+                if(this.readyState == 4 && this.status == 204)
+                {
+                    console.log(xmlhttp$1.responseText + "Bla" + params);
+                }
+            };
+
+            xmlhttp$1.open('POST', url, true);
+            xmlhttp$1.setRequestHeader('Content-type', 'application/x-www-form-urlencoded'); //Send the proper header information along with the request
+            xmlhttp$1.send(params);
+
+            ///
+            var XHR = new XMLHttpRequest();
+            XHR.withCredentials = true;
+            XHR.onreadystatechange = function() {
+              if (XHR.readyState == 4) {
+                if(XHR.status == 201) {
+                  console.log("IT WORKED!");
+                } else {
+                  console.log("ummm something is wrong");
+                }
+              }
+            };
+            XHR.open("POST", url);
+            XHR.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+            var data = "username=";
+            XHR.send(data);
         }
     }
 
@@ -275,8 +447,14 @@
         }
     }
 
-    var m = new Main("http://localhost:63744/api/location");
+    var url = "http://localhost:63744/api/location/";
+    var utilparm = new UtilFindAdresBarParam(); // Get the id from parameter in url bar
+    var m = new Main(url + utilparm.findGetParameter('klantid'));
     m.setupOSMapOnPage();
+
+    // TEST
+    var updte = new UpdateLocation();
+    updte.updateLocation(url + utilparm.findGetParameter('klantid'), 1, "berTitle", "berText");
 
     // https://openlayers.org/en/latest/examples/overlay.html
     // https://code.lengstorf.com/learn-rollup-js/

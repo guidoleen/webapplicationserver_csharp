@@ -9,38 +9,25 @@ export class UpdateLocation
         
         var params = klantid + berTitle + berText;
         
-        // http.withCredentials = true;
+        var data = {};
+        data.klantid = klantid;
+        data.titel = berTitle;
+        data.text  = berText;
+        var json = JSON.stringify(data);
 
-        xmlhttp.onreadystatechange = function() 
+        var xhr = new XMLHttpRequest();
+        xhr.open("PUT", url, true);
+        xhr.setRequestHeader('Content-type','application/json; charset=utf-8');
+        xhr.onload = function () 
         {
-            console.log(xmlhttp.readyState);
-            console.log(xmlhttp.status);
-
-            if(this.readyState == 4 && this.status == 204)
+            var users = JSON.parse(xhr.responseText);
+            if (xhr.readyState == xhr.DONE && xhr.status == "204") 
             {
-                console.log(xmlhttp.responseText + "Bla" + params);
+              console.log("Klaar");
+            } else {
+              console.log("Error in de verbinding...");
             }
         }
-
-        xmlhttp.open('POST', url, true);
-        xmlhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded'); //Send the proper header information along with the request
-        xmlhttp.send(params);
-
-        ///
-        var XHR = new XMLHttpRequest();
-        XHR.withCredentials = true;
-        XHR.onreadystatechange = function() {
-          if (XHR.readyState == 4) {
-            if(XHR.status == 200) {
-              console.log("IT WORKED!");
-            } else {
-              console.log("ummm something is wrong");
-            }
-          }
-        };
-        XHR.open("POST", url);
-        XHR.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-        var data = "username=";
-        XHR.send(data);
+        xhr.send(json);
     }
 }

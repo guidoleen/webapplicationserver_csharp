@@ -14,13 +14,13 @@ export class EventsMap
         this.lonCorr = 0.5;
     }
     
-    addPopUpInMap()
+    addPopUpInMap() // Init popup in de map
     {
         this.popup.setPopUpinMap( new OverLayInfo( this.map, this.mapId, this.popupId, 5, 52 ), "Dus" ); // (osMap, osMapName, iNo, lat, lon)
         return;
     }
 
-    onMarkerClick(overLayInfo, id)
+    onMarkerClickPopUp(overLayInfo, id)
     {
         this.popup.setPopUpinMap( new OverLayInfo( overLayInfo.osMap, overLayInfo.osMapName, this.popupId, (overLayInfo.lon - this.lonCorr), overLayInfo.lat, overLayInfo.berTitle, overLayInfo.berText ), id ); // (osMap, osMapName, iNo, lat, lon)
         new MarkersEvents().markerShowPopup(this.popupId);
@@ -40,7 +40,7 @@ export class EventsMap
                     tracking: true
                 });
 
-            console.log(geolocation.getPosition());
+            // console.log(geolocation.getPosition());
 
             var arrJson = {
                 "latitude": 51.1,    

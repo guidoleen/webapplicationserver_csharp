@@ -150,6 +150,14 @@
             return;
         }
 
+        setPopUpLatLonPosition(osMap, lat, lon)
+        {
+            var pos = ol.proj.fromLonLat([lat, lon]); // ol.proj.transform([overLayInfo.lat, overLayInfo.lon], 'EPSG:4326', 'EPSG:3857'); // 
+            this.popupoverl.setPosition(pos);
+
+            osMap.addOverlay(this.popupoverl);
+        }
+
         get getPopUp()
         {
             return this.popupoverl; // document.getElementById(this.popupid);
@@ -206,13 +214,13 @@
             this.lonCorr = 0.5;
         }
         
-        addPopUpInMap()
+        addPopUpInMap() // Init popup in de map
         {
             this.popup.setPopUpinMap( new OverLayInfo( this.map, this.mapId, this.popupId, 5, 52 ), "Dus" ); // (osMap, osMapName, iNo, lat, lon)
             return;
         }
 
-        onMarkerClick(overLayInfo, id)
+        onMarkerClickPopUp(overLayInfo, id)
         {
             this.popup.setPopUpinMap( new OverLayInfo( overLayInfo.osMap, overLayInfo.osMapName, this.popupId, (overLayInfo.lon - this.lonCorr), overLayInfo.lat, overLayInfo.berTitle, overLayInfo.berText ), id ); // (osMap, osMapName, iNo, lat, lon)
             new MarkersEvents().markerShowPopup(this.popupId);
@@ -232,7 +240,7 @@
                         tracking: true
                     });
 
-                console.log(geolocation.getPosition());
+                // console.log(geolocation.getPosition());
 
                 var arrJson = {
                     "latitude": 51.1,    
@@ -254,15 +262,72 @@
         }
     }
 
+    class MarkersDrag
+    {
+        constructor(){}
+        dragMarkerEventListners(osmap, marker, divMarker, divPopUp)
+        {
+            var lonlat;
+            var lat = 0;
+            var lon = 0;
+            var dragPan;
+            osmap.getInteractions().forEach(function(interaction){
+                if (interaction instanceof ol.interaction.DragPan) {
+                    dragPan = interaction;  
+            }
+            });
+
+            divMarker.addEventListener('pointerdown', function(evt) {
+                dragPan.setActive(false);
+                marker.set('dragging', true);
+                console.info('start dragging');
+            });
+
+            osmap.on('pointermove', function(evt) {
+                if (marker.get('dragging') === true) {
+                marker.setPosition(evt.coordinate);
+
+                lonlat = ol.proj.transform(evt.coordinate, 'EPSG:3857', 'EPSG:4326');
+                lon = lonlat[0];
+                lat = lonlat[1];
+                }
+            });
+
+            osmap.on('pointerup', function(evt) 
+            {
+                if (marker.get('dragging') === true) 
+                {
+                console.info('stop dragging');
+                console.log(lon + " Lat " + lat);
+
+                    divPopUp.popupoverl.setPosition(evt.coordinate); // .setPopUpLatLonPosition(osmap, lat, lon);
+
+                dragPan.setActive(true);
+                marker.set('dragging', false);
+                }
+            });
+        }
+    }
+
+    // http://jsfiddle.net/jonataswalker/rnzgfg89/
+
+    var EV_MAP = new EventsMap(); // GLOBAL
+
     class Marker
     {
         // Set the marker
         setNewMarker( overLayInfo ) // osMap, osMapName, iNo, lat, lon)
         {
             var mapDiv = document.getElementById(overLayInfo.osMapName);
+
+            var divPopUpMarker = document.createElement("div");
+            divPopUpMarker.id = "pop" + overLayInfo.iNo;
+            divPopUpMarker.className = "map-overlay-popupmarker";
+
             var divMarker = document.createElement("div");
             divMarker.id = overLayInfo.iNo;
             divMarker.className = "map-overlay-marker";
+            divMarker.appendChild(divPopUpMarker);
 
             mapDiv.appendChild(divMarker);
 
@@ -270,12 +335,14 @@
               var marker = new ol.Overlay({
                 position: pos,
                 positioning: 'center-center',
-                element: document.getElementById(overLayInfo.iNo)
+                element: document.getElementById(overLayInfo.iNo),
+                stopEvent: false,
+                dragging: false
               });
-
-              divMarker.addEventListener("click", function(){ new EventsMap().onMarkerClick(overLayInfo); }); // Event Listener for popup
-
               overLayInfo.osMap.addOverlay(marker); // Adds the marker on the map
+
+              divPopUpMarker.addEventListener("click", function(){ EV_MAP.onMarkerClickPopUp(overLayInfo); }); // Event Listener for popup
+              new MarkersDrag().dragMarkerEventListners(overLayInfo.osMap, marker, divMarker, EV_MAP.popup); // Event Listeners for dragging marker
         }
     }
 
@@ -387,51 +454,6 @@
 
     var xmlhttp$1 = new XMLHttpRequest();
 
-    class UpdateLocation
-    {
-        constructor(){}
-
-        updateLocation(url, klantid, berTitle, berText)
-        {
-            
-            var params = klantid + berTitle + berText;
-            
-            // http.withCredentials = true;
-
-            xmlhttp$1.onreadystatechange = function() 
-            {
-                console.log(xmlhttp$1.readyState);
-                console.log(xmlhttp$1.status);
-
-                if(this.readyState == 4 && this.status == 204)
-                {
-                    console.log(xmlhttp$1.responseText + "Bla" + params);
-                }
-            };
-
-            xmlhttp$1.open('POST', url, true);
-            xmlhttp$1.setRequestHeader('Content-type', 'application/x-www-form-urlencoded'); //Send the proper header information along with the request
-            xmlhttp$1.send(params);
-
-            ///
-            var XHR = new XMLHttpRequest();
-            XHR.withCredentials = true;
-            XHR.onreadystatechange = function() {
-              if (XHR.readyState == 4) {
-                if(XHR.status == 201) {
-                  console.log("IT WORKED!");
-                } else {
-                  console.log("ummm something is wrong");
-                }
-              }
-            };
-            XHR.open("POST", url);
-            XHR.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-            var data = "username=";
-            XHR.send(data);
-        }
-    }
-
     class Main
     {
         constructor(jsonAdres)
@@ -452,9 +474,9 @@
     var m = new Main(url + utilparm.findGetParameter('klantid'));
     m.setupOSMapOnPage();
 
-    // TEST
-    var updte = new UpdateLocation();
-    updte.updateLocation(url + utilparm.findGetParameter('klantid'), 1, "berTitle", "berText");
+    // TEST UPDATE LOCATION
+    // var updte = new UpdateLocation();
+    // updte.updateLocation(url + utilparm.findGetParameter('klantid'), 1, "berTitle", "berText");
 
     // https://openlayers.org/en/latest/examples/overlay.html
     // https://code.lengstorf.com/learn-rollup-js/

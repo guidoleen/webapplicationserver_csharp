@@ -23,9 +23,9 @@ var utilparm = new UtilFindAdresBarParam(); // Get the id from parameter in url 
 var m = new Main(url + utilparm.findGetParameter('klantid'));
 m.setupOSMapOnPage();
 
-// TEST
-var updte = new UpdateLocation();
-updte.updateLocation(url + utilparm.findGetParameter('klantid'), 1, "berTitle", "berText");
+// TEST UPDATE LOCATION
+// var updte = new UpdateLocation();
+// updte.updateLocation(url + utilparm.findGetParameter('klantid'), 1, "berTitle", "berText");
 
 // https://openlayers.org/en/latest/examples/overlay.html
 // https://code.lengstorf.com/learn-rollup-js/

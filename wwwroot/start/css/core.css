@@ -32,7 +32,8 @@ html, body
 }
 .map-overlay-marker
 {
-    cursor: pointer;
+    /* cursor: pointer; */
+    cursor: move;
     border-radius: 10px;
     width: 20px;
     height: 20px;
@@ -43,6 +44,26 @@ html, body
     z-index: 1;
     background: #ce0090;
     z-index: 1;
+}
+.map-overlay-popupmarker
+{
+    cursor: pointer;
+    border-radius: 10px;
+    width: 20px;
+    height: 20px;
+    border: 0px;
+    position: absolute;
+    top: -10px;
+    left: 10px;
+    z-index: 1;
+    background: #008cff;
+    z-index: 3;
+    
+}
+.map-overlay-popupmarker::after
+{
+  content: "\2192";
+  color: #fff;
 }
 .ol-popup 
 {

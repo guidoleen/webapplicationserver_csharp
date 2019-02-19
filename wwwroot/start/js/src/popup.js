@@ -39,6 +39,14 @@ export class PopUp
         return;
     }
 
+    setPopUpLatLonPosition(osMap, lat, lon)
+    {
+        var pos = ol.proj.fromLonLat([lat, lon]); // ol.proj.transform([overLayInfo.lat, overLayInfo.lon], 'EPSG:4326', 'EPSG:3857'); // 
+        this.popupoverl.setPosition(pos);
+
+        osMap.addOverlay(this.popupoverl);
+    }
+
     get getPopUp()
     {
         return this.popupoverl; // document.getElementById(this.popupid);

@@ -1,7 +1,7 @@
 export class MarkersDrag
 {
     constructor(){}
-    dragMarkerEventListners(osmap, marker, divMarker, divPopUp)
+    dragMarkerEventListners(osmap, marker, divMarker)
     {
         var lonlat;
         var lat = 0;
@@ -17,6 +17,10 @@ export class MarkersDrag
             dragPan.setActive(false);
             marker.set('dragging', true);
             console.info('start dragging');
+            
+            lonlat = ol.proj.transform(evt.coordinate, 'EPSG:3857', 'EPSG:4326');
+            lon = lonlat[0];
+            lat = lonlat[1];
         });
 
         osmap.on('pointermove', function(evt) {
@@ -35,8 +39,12 @@ export class MarkersDrag
             {
             console.info('stop dragging');
             console.log(lon + " Lat " + lat);
+            console.log(evt.coordinate);
 
-                divPopUp.popupoverl.setPosition(evt.coordinate); // .setPopUpLatLonPosition(osmap, lat, lon);
+            divMarker.dataset.lon = lon; // evt.coordinate[0];
+            divMarker.dataset.lat = lat; // evt.coordinate[1];
+
+                // popUp.setPosition(evt.coordinate); // .setPopUpLatLonPosition(osmap, lat, lon);
 
             dragPan.setActive(true);
             marker.set('dragging', false);

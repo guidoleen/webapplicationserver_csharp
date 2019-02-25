@@ -2,7 +2,7 @@ import { OverLayInfo } from './overlayinfo';
 import { EventsMap } from './eventsmap';
 import { MarkersDrag } from './markersdrag';
 
-var EV_MAP = new EventsMap(); // GLOBAL
+var evmap = new EventsMap();
 
 export class Marker
 {
@@ -18,8 +18,19 @@ export class Marker
         var divMarker = document.createElement("div");
         divMarker.id = overLayInfo.iNo;
         divMarker.className = "map-overlay-marker";
+
+        // Add the latlon info into attribute
+        var attLatLon = document.createAttribute("data-lat");  // Create a "lat" attribute
+        attLatLon.value = overLayInfo.lat;
+        divMarker.setAttributeNode(attLatLon); 
+
+        attLatLon = document.createAttribute("data-lon");  // Create a "lon" attribute
+        attLatLon.value = overLayInfo.lon;
+        divMarker.setAttributeNode(attLatLon); 
+
         divMarker.appendChild(divPopUpMarker);
 
+        // Append the marker in the map
         mapDiv.appendChild(divMarker);
 
         var pos = ol.proj.fromLonLat([overLayInfo.lon, overLayInfo.lat]); // ol.proj.transform([lat, lon], 'EPSG:4326', 'EPSG:3857');
@@ -32,8 +43,8 @@ export class Marker
           });
           overLayInfo.osMap.addOverlay(marker); // Adds the marker on the map
 
-          divPopUpMarker.addEventListener("click", function(){ EV_MAP.onMarkerClickPopUp(overLayInfo); }); // Event Listener for popup
-          new MarkersDrag().dragMarkerEventListners(overLayInfo.osMap, marker, divMarker, EV_MAP.popup); // Event Listeners for dragging marker
+          divPopUpMarker.addEventListener("click", function(){ evmap.onMarkerClickPopUp(overLayInfo, divMarker); }); // Event Listener for popup
+          new MarkersDrag().dragMarkerEventListners( overLayInfo.osMap, marker, divMarker ); // Event Listeners for dragging marker
     }
 }
 

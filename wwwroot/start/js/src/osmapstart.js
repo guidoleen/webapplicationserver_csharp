@@ -12,6 +12,7 @@ export class OsmapStart
     {
         this.map;
         this.view;
+        this.popUp;
     }
 
     setupOSMap(jsonAdres, strDiv, lat, lon, zoomf)
@@ -38,11 +39,14 @@ export class OsmapStart
           var jsonMap = new JsonOnMap(jsonAdres);
           jsonMap.putTheJsonOnMap(this.map, strDiv);
 
+          // Create popup
+          this.popUp = new PopUp("popup");
+
           // Add the popup and event Listeners to the map
-          var eventsMap = new EventsMap( this.map, strDiv );
-          eventsMap.addPopUpInMap();
+          var evmap = new EventsMap( this.map, strDiv , this.popUp);
+          evmap.addPopUpInMap();
 
           // Add the eventlisteners
-          eventsMap.addTheEventListeners( new OverLayInfo( this.map, strDiv ), this.view );
+          evmap.addTheEventListeners( new OverLayInfo( this.map, strDiv ), this.view );
     }
 }

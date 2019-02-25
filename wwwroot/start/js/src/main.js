@@ -18,6 +18,7 @@ class Main
     }
 }
 
+
 var url = "http://localhost:63744/api/location/";
 var utilparm = new UtilFindAdresBarParam(); // Get the id from parameter in url bar
 var m = new Main(url + utilparm.findGetParameter('klantid'));

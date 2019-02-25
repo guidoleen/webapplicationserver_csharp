@@ -160,7 +160,12 @@
 
         get getPopUp()
         {
-            return this.popupoverl; // document.getElementById(this.popupid);
+            return this._popupoverl; // document.getElementById(this.popupid);
+        }
+
+        set setPopUp(popupoverl)
+        {
+            this._popupoverl = popupoverl;
         }
 
         setCloseX()
@@ -205,7 +210,7 @@
 
     class EventsMap
     {
-        constructor(map, mapId)
+        constructor(map, mapId, popUp)
         {
             this.map = map;
             this.mapId = mapId;
@@ -220,9 +225,10 @@
             return;
         }
 
-        onMarkerClickPopUp(overLayInfo, id)
+        onMarkerClickPopUp(overLayInfo, divMarker, id)
         {
-            this.popup.setPopUpinMap( new OverLayInfo( overLayInfo.osMap, overLayInfo.osMapName, this.popupId, (overLayInfo.lon - this.lonCorr), overLayInfo.lat, overLayInfo.berTitle, overLayInfo.berText ), id ); // (osMap, osMapName, iNo, lat, lon)
+            // OLD STUFF // this.popup.setPopUpinMap( new OverLayInfo( overLayInfo.osMap, overLayInfo.osMapName, this.popupId, (overLayInfo.lon - this.lonCorr), overLayInfo.lat, overLayInfo.berTitle, overLayInfo.berText ), id ); // (osMap, osMapName, iNo, lat, lon)
+            this.popup.setPopUpinMap( new OverLayInfo( overLayInfo.osMap, overLayInfo.osMapName, this.popupId, parseFloat(divMarker.dataset.lon), parseFloat(divMarker.dataset.lat), overLayInfo.berTitle, overLayInfo.berText ), id ); // (osMap, osMapName, iNo, lat, lon)
             new MarkersEvents().markerShowPopup(this.popupId);
             
             return;
@@ -265,7 +271,7 @@
     class MarkersDrag
     {
         constructor(){}
-        dragMarkerEventListners(osmap, marker, divMarker, divPopUp)
+        dragMarkerEventListners(osmap, marker, divMarker)
         {
             var lonlat;
             var lat = 0;
@@ -281,6 +287,10 @@
                 dragPan.setActive(false);
                 marker.set('dragging', true);
                 console.info('start dragging');
+                
+                lonlat = ol.proj.transform(evt.coordinate, 'EPSG:3857', 'EPSG:4326');
+                lon = lonlat[0];
+                lat = lonlat[1];
             });
 
             osmap.on('pointermove', function(evt) {
@@ -299,8 +309,12 @@
                 {
                 console.info('stop dragging');
                 console.log(lon + " Lat " + lat);
+                console.log(evt.coordinate);
 
-                    divPopUp.popupoverl.setPosition(evt.coordinate); // .setPopUpLatLonPosition(osmap, lat, lon);
+                divMarker.dataset.lon = lon; // evt.coordinate[0];
+                divMarker.dataset.lat = lat; // evt.coordinate[1];
+
+                    // popUp.setPosition(evt.coordinate); // .setPopUpLatLonPosition(osmap, lat, lon);
 
                 dragPan.setActive(true);
                 marker.set('dragging', false);
@@ -311,7 +325,7 @@
 
     // http://jsfiddle.net/jonataswalker/rnzgfg89/
 
-    var EV_MAP = new EventsMap(); // GLOBAL
+    var evmap = new EventsMap();
 
     class Marker
     {
@@ -327,8 +341,19 @@
             var divMarker = document.createElement("div");
             divMarker.id = overLayInfo.iNo;
             divMarker.className = "map-overlay-marker";
+
+            // Add the latlon info into attribute
+            var attLatLon = document.createAttribute("data-lat");  // Create a "lat" attribute
+            attLatLon.value = overLayInfo.lat;
+            divMarker.setAttributeNode(attLatLon); 
+
+            attLatLon = document.createAttribute("data-lon");  // Create a "lon" attribute
+            attLatLon.value = overLayInfo.lon;
+            divMarker.setAttributeNode(attLatLon); 
+
             divMarker.appendChild(divPopUpMarker);
 
+            // Append the marker in the map
             mapDiv.appendChild(divMarker);
 
             var pos = ol.proj.fromLonLat([overLayInfo.lon, overLayInfo.lat]); // ol.proj.transform([lat, lon], 'EPSG:4326', 'EPSG:3857');
@@ -341,8 +366,8 @@
               });
               overLayInfo.osMap.addOverlay(marker); // Adds the marker on the map
 
-              divPopUpMarker.addEventListener("click", function(){ EV_MAP.onMarkerClickPopUp(overLayInfo); }); // Event Listener for popup
-              new MarkersDrag().dragMarkerEventListners(overLayInfo.osMap, marker, divMarker, EV_MAP.popup); // Event Listeners for dragging marker
+              divPopUpMarker.addEventListener("click", function(){ evmap.onMarkerClickPopUp(overLayInfo, divMarker); }); // Event Listener for popup
+              new MarkersDrag().dragMarkerEventListners( overLayInfo.osMap, marker, divMarker ); // Event Listeners for dragging marker
         }
     }
 
@@ -398,6 +423,7 @@
         {
             this.map;
             this.view;
+            this.popUp;
         }
 
         setupOSMap(jsonAdres, strDiv, lat, lon, zoomf)
@@ -424,12 +450,15 @@
               var jsonMap = new JsonOnMap(jsonAdres);
               jsonMap.putTheJsonOnMap(this.map, strDiv);
 
+              // Create popup
+              this.popUp = new PopUp("popup");
+
               // Add the popup and event Listeners to the map
-              var eventsMap = new EventsMap( this.map, strDiv );
-              eventsMap.addPopUpInMap();
+              var evmap = new EventsMap( this.map, strDiv , this.popUp);
+              evmap.addPopUpInMap();
 
               // Add the eventlisteners
-              eventsMap.addTheEventListeners( new OverLayInfo( this.map, strDiv ), this.view );
+              evmap.addTheEventListeners( new OverLayInfo( this.map, strDiv ), this.view );
         }
     }
 
@@ -468,6 +497,7 @@
             osmap.setupOSMap(this.jsonAdres, "osmap", 5, 52, 8);
         }
     }
+
 
     var url = "http://localhost:63744/api/location/";
     var utilparm = new UtilFindAdresBarParam(); // Get the id from parameter in url bar

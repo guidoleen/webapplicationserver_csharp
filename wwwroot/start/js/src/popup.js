@@ -49,7 +49,12 @@ export class PopUp
 
     get getPopUp()
     {
-        return this.popupoverl; // document.getElementById(this.popupid);
+        return this._popupoverl; // document.getElementById(this.popupid);
+    }
+
+    set setPopUp(popupoverl)
+    {
+        this._popupoverl = popupoverl;
     }
 
     setCloseX()

@@ -5,7 +5,7 @@ import { CreateNewMarker } from './createnewmarker';
 
 export class EventsMap
 {
-    constructor(map, mapId)
+    constructor(map, mapId, popUp)
     {
         this.map = map;
         this.mapId = mapId;
@@ -20,9 +20,10 @@ export class EventsMap
         return;
     }
 
-    onMarkerClickPopUp(overLayInfo, id)
+    onMarkerClickPopUp(overLayInfo, divMarker, id)
     {
-        this.popup.setPopUpinMap( new OverLayInfo( overLayInfo.osMap, overLayInfo.osMapName, this.popupId, (overLayInfo.lon - this.lonCorr), overLayInfo.lat, overLayInfo.berTitle, overLayInfo.berText ), id ); // (osMap, osMapName, iNo, lat, lon)
+        // OLD STUFF // this.popup.setPopUpinMap( new OverLayInfo( overLayInfo.osMap, overLayInfo.osMapName, this.popupId, (overLayInfo.lon - this.lonCorr), overLayInfo.lat, overLayInfo.berTitle, overLayInfo.berText ), id ); // (osMap, osMapName, iNo, lat, lon)
+        this.popup.setPopUpinMap( new OverLayInfo( overLayInfo.osMap, overLayInfo.osMapName, this.popupId, parseFloat(divMarker.dataset.lon), parseFloat(divMarker.dataset.lat), overLayInfo.berTitle, overLayInfo.berText ), id ); // (osMap, osMapName, iNo, lat, lon)
         new MarkersEvents().markerShowPopup(this.popupId);
         
         return;

@@ -2,10 +2,11 @@ import { PopUp } from './popup';
 import { OverLayInfo } from './overlayinfo';
 import { MarkersEvents } from './markersevents';
 import { CreateNewMarker } from './createnewmarker';
+import { UpdateLocation } from './updatelocation'
 
 export class EventsMap
 {
-    constructor(map, mapId, popUp)
+    constructor(map, mapId)
     {
         this.map = map;
         this.mapId = mapId;
@@ -16,7 +17,8 @@ export class EventsMap
     
     addPopUpInMap() // Init popup in de map
     {
-        this.popup.setPopUpinMap( new OverLayInfo( this.map, this.mapId, this.popupId, 5, 52 ), "Dus" ); // (osMap, osMapName, iNo, lat, lon)
+        // constructor(osMap, osMapName, iNo, lat, lon, berTitle, berText, berId)
+        this.popup.setPopUpinMap( new OverLayInfo( this.map, this.mapId, this.popupId, 5, 52, "Dus", "Dus",  0) ); // (osMap, osMapName, iNo, lat, lon)
         return;
     }
 
@@ -46,7 +48,7 @@ export class EventsMap
             var arrJson = {
                 "latitude": 51.1,    
                 "longitude": 5.1,
-                "locid": Math.random(),    
+                "locid": Math.random(),
                 "klantid": 0,   
                 "berichtid": 2,
                 "bertitel": "Vul deze in...",    
@@ -56,9 +58,23 @@ export class EventsMap
         });
     }
 
+    // Save and update information
+    onSaveClick()
+    {
+        document.getElementById("save").addEventListener("click", function()
+        {
+            if(dataset.insert == 0)
+            {
+                
+            }
+            alert("dataset.lat");
+        });
+    }
+
     // Add the EventListeners on MapStart
     addTheEventListeners( overLayInfo, osView )
     {
         this.onNewMarkerClick( overLayInfo, osView );
+        this.onSaveClick();
     }
 }

@@ -20,14 +20,12 @@ export class Marker
         divMarker.className = "map-overlay-marker";
 
         // Add the latlon info into attribute
-        var attLatLon = document.createAttribute("data-lat");  // Create a "lat" attribute
-        attLatLon.value = overLayInfo.lat;
-        divMarker.setAttributeNode(attLatLon); 
+        this.createAnAttribute(divMarker, "lat", parseFloat(overLayInfo.lat));
+        this.createAnAttribute(divMarker, "lon", parseFloat(overLayInfo.lon));
+        this.createAnAttribute(divMarker, "insert", 0);
+        this.createAnAttribute(divMarker, "berichtid", overLayInfo.berId);
 
-        attLatLon = document.createAttribute("data-lon");  // Create a "lon" attribute
-        attLatLon.value = overLayInfo.lon;
-        divMarker.setAttributeNode(attLatLon); 
-
+        // Append the popup button to the marker
         divMarker.appendChild(divPopUpMarker);
 
         // Append the marker in the map
@@ -45,6 +43,13 @@ export class Marker
 
           divPopUpMarker.addEventListener("click", function(){ evmap.onMarkerClickPopUp(overLayInfo, divMarker); }); // Event Listener for popup
           new MarkersDrag().dragMarkerEventListners( overLayInfo.osMap, marker, divMarker ); // Event Listeners for dragging marker
+    }
+
+    createAnAttribute(divMarker, attrName, value)
+    {
+          var att = document.createAttribute("data-" + attrName);  // Create a "lat" attribute
+          att.value = value;
+          divMarker.setAttributeNode(att); 
     }
 }
 

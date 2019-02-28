@@ -11,3 +11,4 @@ C:\Users\guido_leen\source\repos\WebApplicationSERVER\WebApplicationSERVER\obj\D
 C:\Users\guido_leen\source\repos\WebApplicationSERVER\WebApplicationSERVER\obj\Debug\netcoreapp2.1\WebApplicationSERVER.RazorTargetAssemblyInfo.cache
 C:\Users\guido_leen\source\repos\WebApplicationSERVER\WebApplicationSERVER\obj\Debug\netcoreapp2.1\WebApplicationSERVER.dll
 C:\Users\guido_leen\source\repos\WebApplicationSERVER\WebApplicationSERVER\obj\Debug\netcoreapp2.1\WebApplicationSERVER.pdb
+C:\Users\guido_leen\source\repos\WebApplicationSERVER\WebApplicationSERVER\obj\Debug\netcoreapp2.1\WebApplicationSERVER.csprojAssemblyReference.cache

@@ -40,13 +40,15 @@ export class OsmapStart
           jsonMap.putTheJsonOnMap(this.map, strDiv);
 
           // Create popup
-          this.popUp = new PopUp("popup");
+          // this.popUp = new PopUp("popup");
 
           // Add the popup and event Listeners to the map
-          var evmap = new EventsMap( this.map, strDiv , this.popUp);
-          evmap.addPopUpInMap();
+          var popU = new PopUp("popup");
+          popU.setPopUpinMap( new OverLayInfo(this.map, strDiv, "popup", 0,0,"","",0) );
+          
+          var evmap = new EventsMap( this.map, strDiv );
 
           // Add the eventlisteners
-          evmap.addTheEventListeners( new OverLayInfo( this.map, strDiv ), this.view );
+          // evmap.addTheEventListeners( new OverLayInfo( this.map, strDiv ), this.view );
     }
 }

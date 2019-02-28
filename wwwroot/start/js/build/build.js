@@ -136,17 +136,20 @@
         setPopUpinMap( overLayInfo ) // osMap, osMapName, divPopUp, lat, lon)
         {
             this.popupid = overLayInfo.iNo;
+            if(this.popupdiv !== null)
+            {
+                var pos = ol.proj.fromLonLat([overLayInfo.lat, overLayInfo.lon]); // ol.proj.transform([overLayInfo.lat, overLayInfo.lon], 'EPSG:4326', 'EPSG:3857'); // 
+                this.popupoverl.setPosition(pos);
 
-            var pos = ol.proj.fromLonLat([overLayInfo.lat, overLayInfo.lon]); // ol.proj.transform([overLayInfo.lat, overLayInfo.lon], 'EPSG:4326', 'EPSG:3857'); // 
-            this.popupoverl.setPosition(pos);
+                    overLayInfo.osMap.addOverlay(this.popupoverl);
+            
+                this.popupdiv.innerHTML = this.setCloseX() + this.setH3(overLayInfo.berTitle) +  this.setP(overLayInfo.berText) + this.setSaveForm("strApiUrl");
 
-              overLayInfo.osMap.addOverlay(this.popupoverl);
-        
-            this.popupdiv.innerHTML = this.setCloseX() + this.setH3(overLayInfo.berTitle) +  this.setP(overLayInfo.berText) + this.setSaveForm("strApiUrl");
-
-            document.getElementById("popup_closer").addEventListener("click", function(){
-                new MarkersEvents().markersHidePopup(overLayInfo.iNo);
-            });
+                document.getElementById("popup_closer").addEventListener("click", function(){
+                    new MarkersEvents().markersHidePopup(overLayInfo.iNo);
+                });
+            }
+            
             return;
         }
 
@@ -190,7 +193,7 @@
             strForm += "<input class='input-txt mrg-bottom' type='text' name='title'>";
             strForm += "<span class='input-span'>Bericht</span>";
             strForm += "<input class='input-txt mrg-bottom' type='text' name='bericht'>";
-            strForm += "<input class='input-button' type='button' value='Save' >";
+            strForm += "<input id='save' class='input-button' type='button' value='Save' >";
             strForm += "</form>";
 
             return strForm;
@@ -208,9 +211,11 @@
         }
     }
 
+    var xmlhttp = new XMLHttpRequest();
+
     class EventsMap
     {
-        constructor(map, mapId, popUp)
+        constructor(map, mapId)
         {
             this.map = map;
             this.mapId = mapId;
@@ -221,7 +226,8 @@
         
         addPopUpInMap() // Init popup in de map
         {
-            this.popup.setPopUpinMap( new OverLayInfo( this.map, this.mapId, this.popupId, 5, 52 ), "Dus" ); // (osMap, osMapName, iNo, lat, lon)
+            // constructor(osMap, osMapName, iNo, lat, lon, berTitle, berText, berId)
+            this.popup.setPopUpinMap( new OverLayInfo( this.map, this.mapId, this.popupId, 5, 52, "Dus", "Dus",  0) ); // (osMap, osMapName, iNo, lat, lon)
             return;
         }
 
@@ -251,7 +257,7 @@
                 var arrJson = {
                     "latitude": 51.1,    
                     "longitude": 5.1,
-                    "locid": Math.random(),    
+                    "locid": Math.random(),
                     "klantid": 0,   
                     "berichtid": 2,
                     "bertitel": "Vul deze in...",    
@@ -261,10 +267,22 @@
             });
         }
 
+        // Save and update information
+        onSaveClick()
+        {
+            document.getElementById("save").addEventListener("click", function()
+            {
+                if(dataset.insert == 0)
+                ;
+                alert("dataset.lat");
+            });
+        }
+
         // Add the EventListeners on MapStart
         addTheEventListeners( overLayInfo, osView )
         {
             this.onNewMarkerClick( overLayInfo, osView );
+            this.onSaveClick();
         }
     }
 
@@ -343,14 +361,12 @@
             divMarker.className = "map-overlay-marker";
 
             // Add the latlon info into attribute
-            var attLatLon = document.createAttribute("data-lat");  // Create a "lat" attribute
-            attLatLon.value = overLayInfo.lat;
-            divMarker.setAttributeNode(attLatLon); 
+            this.createAnAttribute(divMarker, "lat", parseFloat(overLayInfo.lat));
+            this.createAnAttribute(divMarker, "lon", parseFloat(overLayInfo.lon));
+            this.createAnAttribute(divMarker, "insert", 0);
+            this.createAnAttribute(divMarker, "berichtid", overLayInfo.berId);
 
-            attLatLon = document.createAttribute("data-lon");  // Create a "lon" attribute
-            attLatLon.value = overLayInfo.lon;
-            divMarker.setAttributeNode(attLatLon); 
-
+            // Append the popup button to the marker
             divMarker.appendChild(divPopUpMarker);
 
             // Append the marker in the map
@@ -368,6 +384,13 @@
 
               divPopUpMarker.addEventListener("click", function(){ evmap.onMarkerClickPopUp(overLayInfo, divMarker); }); // Event Listener for popup
               new MarkersDrag().dragMarkerEventListners( overLayInfo.osMap, marker, divMarker ); // Event Listeners for dragging marker
+        }
+
+        createAnAttribute(divMarker, attrName, value)
+        {
+              var att = document.createAttribute("data-" + attrName);  // Create a "lat" attribute
+              att.value = value;
+              divMarker.setAttributeNode(att); 
         }
     }
 
@@ -388,7 +411,7 @@
         }
     }
 
-    var xmlhttp = new XMLHttpRequest();
+    var xmlhttp$1 = new XMLHttpRequest();
 
     class JsonOnMap
     {
@@ -400,18 +423,18 @@
         {
             var monmap = new MarkersOnMap();
                     
-            xmlhttp.onreadystatechange = function()
+            xmlhttp$1.onreadystatechange = function()
             {
                 if(this.readyState == 4 && this.status == 200)
                 {
-                    var jsonObj = JSON.parse(xmlhttp.response); // JSON.parse(xmlhttp.response);
+                    var jsonObj = JSON.parse(xmlhttp$1.response); // JSON.parse(xmlhttp.response);
                     jsonObj = JSON.parse(jsonObj); // Parse JSON twice
 
                     monmap.putMarkersOnMap(osMap, osMapName, jsonObj);
                 }
             };
-            xmlhttp.open("GET", this.jsonres, true);
-            xmlhttp.send();
+            xmlhttp$1.open("GET", this.jsonres, true);
+            xmlhttp$1.send();
         }
     }
 
@@ -451,14 +474,16 @@
               jsonMap.putTheJsonOnMap(this.map, strDiv);
 
               // Create popup
-              this.popUp = new PopUp("popup");
+              // this.popUp = new PopUp("popup");
 
               // Add the popup and event Listeners to the map
-              var evmap = new EventsMap( this.map, strDiv , this.popUp);
-              evmap.addPopUpInMap();
+              var popU = new PopUp("popup");
+              popU.setPopUpinMap( new OverLayInfo(this.map, strDiv, "popup", 0,0,"","",0) );
+              
+              var evmap = new EventsMap( this.map, strDiv );
 
               // Add the eventlisteners
-              evmap.addTheEventListeners( new OverLayInfo( this.map, strDiv ), this.view );
+              // evmap.addTheEventListeners( new OverLayInfo( this.map, strDiv ), this.view );
         }
     }
 
@@ -481,7 +506,29 @@
         }
     }
 
-    var xmlhttp$1 = new XMLHttpRequest();
+    class CreateHiddenInput
+    {
+        constructor(divname)
+        {
+            this.divname = divname;
+        }
+        createHiddenInput(name, value)
+        {
+            var input = document.createElement("input");
+            input.setAttribute("type", "hidden");
+            input.setAttribute("name", name);
+            input.setAttribute("value", value);
+
+            document.getElementById(this.divname).appendChild(input);
+        }
+        setHiddenInput(name, value)
+        {
+            var inputdoc = document.getElementById(name);
+            inputdoc.value = value;
+        }
+    }
+
+    var xmlhttp$2 = new XMLHttpRequest();
 
     class Main
     {
@@ -496,17 +543,45 @@
             var osmap = new OsmapStart(); 
             osmap.setupOSMap(this.jsonAdres, "osmap", 5, 52, 8);
         }
+
+        setupHiddenInputs(klantid)
+        {
+             // Create hidden inputs for the popup info
+             var crInput = new CreateHiddenInput("hiddeninput");
+            
+             crInput.createHiddenInput("locid", 0);
+             crInput.createHiddenInput("latitude", 0);
+             crInput.createHiddenInput("longitude", 0);
+             crInput.createHiddenInput("bertitel", "");
+             crInput.createHiddenInput("bertext", "");
+             crInput.createHiddenInput("berichtid", 0);
+             crInput.createHiddenInput("klantid", klantid);
+        }
     }
 
-
-    var url = "http://localhost:63744/api/location/";
     var utilparm = new UtilFindAdresBarParam(); // Get the id from parameter in url bar
-    var m = new Main(url + utilparm.findGetParameter('klantid'));
+    var url = "http://localhost:63744/api/location/";
+    var klantId = utilparm.findGetParameter('klantid');
+
+    var m = new Main(url + klantId);
     m.setupOSMapOnPage();
+    m.setupHiddenInputs(klantId);
 
     // TEST UPDATE LOCATION
     // var updte = new UpdateLocation();
-    // updte.updateLocation(url + utilparm.findGetParameter('klantid'), 1, "berTitle", "berText");
+
+    // locid=42&latitude=52%2C3&longitude=4&bertitel=Dit+is+een+nieuwe+titel&bertext=Dit+is+een+text+over+deze+locatie&berichtid=2&klantid
+    // (url, locid, latitude, longitude, berTitle, berText, berichtid, klantid)
+
+    // updte.updateLocation(url + utilparm.findGetParameter('klantid'),
+    //                     42,
+    //                     new UtilConfertDecimalToString().convertdecimalstring(52.36586),
+    //                     new UtilConfertDecimalToString().convertdecimalstring(4.36586),
+    //                     "Dit is een nieuwe koffiekop", 
+    //                     "zo ist maar net dus dat dan weer wel",
+    //                     2,
+    //                     utilparm.findGetParameter('klantid')
+    //                     );
 
     // https://openlayers.org/en/latest/examples/overlay.html
     // https://code.lengstorf.com/learn-rollup-js/

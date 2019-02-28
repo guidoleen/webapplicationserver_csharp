@@ -25,17 +25,20 @@ export class PopUp
     setPopUpinMap( overLayInfo ) // osMap, osMapName, divPopUp, lat, lon)
     {
         this.popupid = overLayInfo.iNo;
+        if(this.popupdiv !== null)
+        {
+            var pos = ol.proj.fromLonLat([overLayInfo.lat, overLayInfo.lon]); // ol.proj.transform([overLayInfo.lat, overLayInfo.lon], 'EPSG:4326', 'EPSG:3857'); // 
+            this.popupoverl.setPosition(pos);
 
-        var pos = ol.proj.fromLonLat([overLayInfo.lat, overLayInfo.lon]); // ol.proj.transform([overLayInfo.lat, overLayInfo.lon], 'EPSG:4326', 'EPSG:3857'); // 
-        this.popupoverl.setPosition(pos);
+                overLayInfo.osMap.addOverlay(this.popupoverl);
+        
+            this.popupdiv.innerHTML = this.setCloseX() + this.setH3(overLayInfo.berTitle) +  this.setP(overLayInfo.berText) + this.setSaveForm("strApiUrl");
 
-          overLayInfo.osMap.addOverlay(this.popupoverl);
-    
-        this.popupdiv.innerHTML = this.setCloseX() + this.setH3(overLayInfo.berTitle) +  this.setP(overLayInfo.berText) + this.setSaveForm("strApiUrl");
-
-        document.getElementById("popup_closer").addEventListener("click", function(){
-            new MarkersEvents().markersHidePopup(overLayInfo.iNo);
-        });
+            document.getElementById("popup_closer").addEventListener("click", function(){
+                new MarkersEvents().markersHidePopup(overLayInfo.iNo);
+            });
+        }
+        
         return;
     }
 
@@ -79,7 +82,7 @@ export class PopUp
         strForm += "<input class='input-txt mrg-bottom' type='text' name='title'>";
         strForm += "<span class='input-span'>Bericht</span>";
         strForm += "<input class='input-txt mrg-bottom' type='text' name='bericht'>";
-        strForm += "<input class='input-button' type='button' value='Save' >";
+        strForm += "<input id='save' class='input-button' type='button' value='Save' >";
         strForm += "</form>";
 
         return strForm;

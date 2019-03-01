@@ -5,6 +5,7 @@ import { OverLayInfo } from './overlayinfo';
 import { EventsMap } from './eventsmap';
 
 // import VectorSource from 'ol/source/Vector';
+var evmap;
 
 export class OsmapStart
 {
@@ -35,20 +36,18 @@ export class OsmapStart
             view: this.view
           });
 
+          // Firt create EventsMap and popup
+          // Add the popup and event Listeners to the map
+          var popU = new PopUp("popup"); // popU.setPopUpinMap( new OverLayInfo(this.map, strDiv, "popup", 0,0,"","",0) );
+          
+          evmap = new EventsMap( this.map, strDiv, popU );
+          evmap.addPopUpInMap();
+
           // Put the Json on the map
           var jsonMap = new JsonOnMap(jsonAdres);
-          jsonMap.putTheJsonOnMap(this.map, strDiv);
-
-          // Create popup
-          // this.popUp = new PopUp("popup");
-
-          // Add the popup and event Listeners to the map
-          var popU = new PopUp("popup");
-          popU.setPopUpinMap( new OverLayInfo(this.map, strDiv, "popup", 0,0,"","",0) );
-          
-          var evmap = new EventsMap( this.map, strDiv );
-
+          jsonMap.putTheJsonOnMap(this.map, strDiv, evmap);
+       
           // Add the eventlisteners
-          // evmap.addTheEventListeners( new OverLayInfo( this.map, strDiv ), this.view );
+          evmap.addTheEventListeners( new OverLayInfo( this.map, strDiv ), this.view );
     }
 }

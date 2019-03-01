@@ -2,12 +2,9 @@ import { OverLayInfo } from './overlayinfo';
 import { EventsMap } from './eventsmap';
 import { MarkersDrag } from './markersdrag';
 
-var evmap = new EventsMap();
-
 export class Marker
 {
-    // Set the marker
-    setNewMarker( overLayInfo ) // osMap, osMapName, iNo, lat, lon)
+    setNewMarker( overLayInfo, evMap, insertNo ) // osMap, osMapName, iNo, lat, lon)
     {
         var mapDiv = document.getElementById(overLayInfo.osMapName);
 
@@ -20,9 +17,9 @@ export class Marker
         divMarker.className = "map-overlay-marker";
 
         // Add the latlon info into attribute
-        this.createAnAttribute(divMarker, "lat", parseFloat(overLayInfo.lat));
-        this.createAnAttribute(divMarker, "lon", parseFloat(overLayInfo.lon));
-        this.createAnAttribute(divMarker, "insert", 0);
+        this.createAnAttribute(divPopUpMarker, "lat", parseFloat(overLayInfo.lat));
+        this.createAnAttribute(divPopUpMarker, "lon", parseFloat(overLayInfo.lon));
+        this.createAnAttribute(divMarker, "insert", insertNo);
         this.createAnAttribute(divMarker, "berichtid", overLayInfo.berId);
 
         // Append the popup button to the marker
@@ -41,8 +38,11 @@ export class Marker
           });
           overLayInfo.osMap.addOverlay(marker); // Adds the marker on the map
 
-          divPopUpMarker.addEventListener("click", function(){ evmap.onMarkerClickPopUp(overLayInfo, divMarker); }); // Event Listener for popup
-          new MarkersDrag().dragMarkerEventListners( overLayInfo.osMap, marker, divMarker ); // Event Listeners for dragging marker
+          divPopUpMarker.addEventListener("click", function()
+          { 
+              evMap.onMarkerClickPopUp(overLayInfo, divMarker, divPopUpMarker); 
+          }); // Event Listener for popup
+          new MarkersDrag().dragMarkerEventListners( overLayInfo.osMap, marker, divMarker, divPopUpMarker ); // Event Listeners for dragging marker
     }
 
     createAnAttribute(divMarker, attrName, value)

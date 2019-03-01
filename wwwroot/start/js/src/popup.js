@@ -25,6 +25,7 @@ export class PopUp
     setPopUpinMap( overLayInfo ) // osMap, osMapName, divPopUp, lat, lon)
     {
         this.popupid = overLayInfo.iNo;
+
         if(this.popupdiv !== null)
         {
             var pos = ol.proj.fromLonLat([overLayInfo.lat, overLayInfo.lon]); // ol.proj.transform([overLayInfo.lat, overLayInfo.lon], 'EPSG:4326', 'EPSG:3857'); // 
@@ -82,7 +83,7 @@ export class PopUp
         strForm += "<input class='input-txt mrg-bottom' type='text' name='title'>";
         strForm += "<span class='input-span'>Bericht</span>";
         strForm += "<input class='input-txt mrg-bottom' type='text' name='bericht'>";
-        strForm += "<input id='save' class='input-button' type='button' value='Save' >";
+        strForm += "<div id='save' class='input-button' type='button' value='Save' onclick='save();' >Save</div>";
         strForm += "</form>";
 
         return strForm;

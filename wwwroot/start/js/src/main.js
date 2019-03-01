@@ -1,6 +1,6 @@
 import { OsmapStart } from './osmapstart';
 import { EventsMap } from './eventsmap';
-import { UtilFindAdresBarParam } from './utilfindadresbarparam';
+// import { UtilFindAdresBarParam } from './utilfindadresbarparam';
 import { CreateHiddenInput } from './createhiddeninput';
 import { InsertLocation } from './insertlocation';
 import { UpdateLocation } from './updatelocation';
@@ -35,13 +35,9 @@ class Main
     }
 }
 
-var utilparm = new UtilFindAdresBarParam(); // Get the id from parameter in url bar
-var url = "http://localhost:63744/api/location/";
-var klantId = utilparm.findGetParameter('klantid');
-
-var m = new Main(url + klantId);
+var m = new Main(URL + KLANTID);
 m.setupOSMapOnPage();
-m.setupHiddenInputs(klantId);
+m.setupHiddenInputs(KLANTID);
 
 // TEST UPDATE LOCATION
 // var updte = new UpdateLocation();

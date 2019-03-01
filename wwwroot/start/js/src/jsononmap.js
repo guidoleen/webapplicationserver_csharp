@@ -8,7 +8,7 @@ export class JsonOnMap
     {
         this.jsonres = jsonres;
     }
-    putTheJsonOnMap(osMap, osMapName)
+    putTheJsonOnMap(osMap, osMapName, evMap)
     {
         var monmap = new MarkersOnMap();
                 
@@ -19,7 +19,7 @@ export class JsonOnMap
                 var jsonObj = JSON.parse(xmlhttp.response); // JSON.parse(xmlhttp.response);
                 jsonObj = JSON.parse(jsonObj); // Parse JSON twice
 
-                monmap.putMarkersOnMap(osMap, osMapName, jsonObj);
+                monmap.putMarkersOnMap(osMap, osMapName, jsonObj, evMap);
             }
         }
         xmlhttp.open("GET", this.jsonres, true);

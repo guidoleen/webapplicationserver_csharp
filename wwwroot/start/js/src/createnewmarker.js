@@ -5,9 +5,9 @@ export class CreateNewMarker
 {
     constructor(){}
 
-    putMarkerOnMap(osMap, osMapName, arrJson)
+    putMarkerOnMap(osMap, osMapName, arrJson, evMap, insertNo)
     {
         var marker = new Marker();
-        marker.setNewMarker( new OverLayInfo(osMap, osMapName, arrJson.locid, arrJson.latitude, arrJson.longitude, arrJson.bertitel, arrJson.bertext, arrJson.berichtid ) );
+        marker.setNewMarker( new OverLayInfo(osMap, osMapName, arrJson.locid, arrJson.latitude, arrJson.longitude, arrJson.bertitel, arrJson.bertext, arrJson.berichtid ), evMap, insertNo );
     }
 }

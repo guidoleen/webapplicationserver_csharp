@@ -2,16 +2,17 @@ import { PopUp } from './popup';
 import { OverLayInfo } from './overlayinfo';
 import { MarkersEvents } from './markersevents';
 import { CreateNewMarker } from './createnewmarker';
-import { UpdateLocation } from './updatelocation'
+import { UpdateLocation } from './updatelocation';
+import { CreateHiddenInput } from './createhiddeninput';
 
 export class EventsMap
 {
-    constructor(map, mapId)
+    constructor(map, mapId, popUp)
     {
         this.map = map;
         this.mapId = mapId;
         this.popupId = "popup";
-        this.popup = new PopUp(this.popupId);
+        this.popup = popUp; // new PopUp(this.popupId);
         this.lonCorr = 0.5;
     }
     
@@ -22,10 +23,26 @@ export class EventsMap
         return;
     }
 
-    onMarkerClickPopUp(overLayInfo, divMarker, id)
+    onMarkerClickPopUp(overLayInfo, divMarker, divPopUpMarker, id)
     {
         // OLD STUFF // this.popup.setPopUpinMap( new OverLayInfo( overLayInfo.osMap, overLayInfo.osMapName, this.popupId, (overLayInfo.lon - this.lonCorr), overLayInfo.lat, overLayInfo.berTitle, overLayInfo.berText ), id ); // (osMap, osMapName, iNo, lat, lon)
-        this.popup.setPopUpinMap( new OverLayInfo( overLayInfo.osMap, overLayInfo.osMapName, this.popupId, parseFloat(divMarker.dataset.lon), parseFloat(divMarker.dataset.lat), overLayInfo.berTitle, overLayInfo.berText ), id ); // (osMap, osMapName, iNo, lat, lon)
+        var lat = parseFloat(divPopUpMarker.dataset.lat);
+        var lon = parseFloat(divPopUpMarker.dataset.lon);
+
+        this.popup.setPopUpinMap( new OverLayInfo( overLayInfo.osMap, overLayInfo.osMapName, this.popupId, lon, 
+            lat, overLayInfo.berTitle, overLayInfo.berText ), id ); // (osMap, osMapName, iNo, lat, lon)
+        
+        // Pass info to the hidden input types after popup clicked
+        var crInput = new CreateHiddenInput("hiddeninput");
+        
+         crInput.setHiddenInput("locid", overLayInfo.iNo);
+         crInput.setHiddenInput("latitude", lat);
+         crInput.setHiddenInput("longitude", lon);
+         crInput.setHiddenInput("bertitel", overLayInfo.berTitle);
+         crInput.setHiddenInput("bertext", overLayInfo.berText);
+         crInput.setHiddenInput("berichtid", divMarker.dataset.berichtid);
+
+         // Show popup in osmap
         new MarkersEvents().markerShowPopup(this.popupId);
         
         return;
@@ -54,20 +71,7 @@ export class EventsMap
                 "bertitel": "Vul deze in...",    
                 "bertext": "Doe is wat...." 
             };
-            new CreateNewMarker().putMarkerOnMap( overLayInfo.osMap, overLayInfo.osMapName, arrJson );
-        });
-    }
-
-    // Save and update information
-    onSaveClick()
-    {
-        document.getElementById("save").addEventListener("click", function()
-        {
-            if(dataset.insert == 0)
-            {
-                
-            }
-            alert("dataset.lat");
+            new CreateNewMarker().putMarkerOnMap( overLayInfo.osMap, overLayInfo.osMapName, arrJson, this, 1 );
         });
     }
 
@@ -75,6 +79,5 @@ export class EventsMap
     addTheEventListeners( overLayInfo, osView )
     {
         this.onNewMarkerClick( overLayInfo, osView );
-        this.onSaveClick();
     }
 }

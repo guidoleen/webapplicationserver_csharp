@@ -9,6 +9,7 @@ export class CreateHiddenInput
     {
         var input = document.createElement("input");
         input.setAttribute("type", "hidden");
+        input.setAttribute("id", name);
         input.setAttribute("name", name);
         input.setAttribute("value", value);
 
@@ -18,5 +19,10 @@ export class CreateHiddenInput
     {
         var inputdoc = document.getElementById(name);
         inputdoc.value = value;
+    }
+    getHiddenInput(name)
+    {
+        var inputdoc = document.getElementById(name);
+        return inputdoc.value;
     }
 }

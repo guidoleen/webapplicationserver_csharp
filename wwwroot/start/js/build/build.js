@@ -136,6 +136,7 @@
         setPopUpinMap( overLayInfo ) // osMap, osMapName, divPopUp, lat, lon)
         {
             this.popupid = overLayInfo.iNo;
+
             if(this.popupdiv !== null)
             {
                 var pos = ol.proj.fromLonLat([overLayInfo.lat, overLayInfo.lon]); // ol.proj.transform([overLayInfo.lat, overLayInfo.lon], 'EPSG:4326', 'EPSG:3857'); // 
@@ -193,7 +194,7 @@
             strForm += "<input class='input-txt mrg-bottom' type='text' name='title'>";
             strForm += "<span class='input-span'>Bericht</span>";
             strForm += "<input class='input-txt mrg-bottom' type='text' name='bericht'>";
-            strForm += "<input id='save' class='input-button' type='button' value='Save' >";
+            strForm += "<div id='save' class='input-button' type='button' value='Save' onclick='save();' >Save</div>";
             strForm += "</form>";
 
             return strForm;
@@ -204,23 +205,51 @@
     {
         constructor(){}
 
-        putMarkerOnMap(osMap, osMapName, arrJson)
+        putMarkerOnMap(osMap, osMapName, arrJson, evMap, insertNo)
         {
             var marker = new Marker();
-            marker.setNewMarker( new OverLayInfo(osMap, osMapName, arrJson.locid, arrJson.latitude, arrJson.longitude, arrJson.bertitel, arrJson.bertext, arrJson.berichtid ) );
+            marker.setNewMarker( new OverLayInfo(osMap, osMapName, arrJson.locid, arrJson.latitude, arrJson.longitude, arrJson.bertitel, arrJson.bertext, arrJson.berichtid ), evMap, insertNo );
         }
     }
 
     var xmlhttp = new XMLHttpRequest();
 
+    class CreateHiddenInput
+    {
+        constructor(divname)
+        {
+            this.divname = divname;
+        }
+        createHiddenInput(name, value)
+        {
+            var input = document.createElement("input");
+            input.setAttribute("type", "hidden");
+            input.setAttribute("id", name);
+            input.setAttribute("name", name);
+            input.setAttribute("value", value);
+
+            document.getElementById(this.divname).appendChild(input);
+        }
+        setHiddenInput(name, value)
+        {
+            var inputdoc = document.getElementById(name);
+            inputdoc.value = value;
+        }
+        getHiddenInput(name)
+        {
+            var inputdoc = document.getElementById(name);
+            return inputdoc.value;
+        }
+    }
+
     class EventsMap
     {
-        constructor(map, mapId)
+        constructor(map, mapId, popUp)
         {
             this.map = map;
             this.mapId = mapId;
             this.popupId = "popup";
-            this.popup = new PopUp(this.popupId);
+            this.popup = popUp; // new PopUp(this.popupId);
             this.lonCorr = 0.5;
         }
         
@@ -231,10 +260,26 @@
             return;
         }
 
-        onMarkerClickPopUp(overLayInfo, divMarker, id)
+        onMarkerClickPopUp(overLayInfo, divMarker, divPopUpMarker, id)
         {
             // OLD STUFF // this.popup.setPopUpinMap( new OverLayInfo( overLayInfo.osMap, overLayInfo.osMapName, this.popupId, (overLayInfo.lon - this.lonCorr), overLayInfo.lat, overLayInfo.berTitle, overLayInfo.berText ), id ); // (osMap, osMapName, iNo, lat, lon)
-            this.popup.setPopUpinMap( new OverLayInfo( overLayInfo.osMap, overLayInfo.osMapName, this.popupId, parseFloat(divMarker.dataset.lon), parseFloat(divMarker.dataset.lat), overLayInfo.berTitle, overLayInfo.berText ), id ); // (osMap, osMapName, iNo, lat, lon)
+            var lat = parseFloat(divPopUpMarker.dataset.lat);
+            var lon = parseFloat(divPopUpMarker.dataset.lon);
+
+            this.popup.setPopUpinMap( new OverLayInfo( overLayInfo.osMap, overLayInfo.osMapName, this.popupId, lon, 
+                lat, overLayInfo.berTitle, overLayInfo.berText ), id ); // (osMap, osMapName, iNo, lat, lon)
+            
+            // Pass info to the hidden input types after popup clicked
+            var crInput = new CreateHiddenInput("hiddeninput");
+            
+             crInput.setHiddenInput("locid", overLayInfo.iNo);
+             crInput.setHiddenInput("latitude", lat);
+             crInput.setHiddenInput("longitude", lon);
+             crInput.setHiddenInput("bertitel", overLayInfo.berTitle);
+             crInput.setHiddenInput("bertext", overLayInfo.berText);
+             crInput.setHiddenInput("berichtid", divMarker.dataset.berichtid);
+
+             // Show popup in osmap
             new MarkersEvents().markerShowPopup(this.popupId);
             
             return;
@@ -263,18 +308,7 @@
                     "bertitel": "Vul deze in...",    
                     "bertext": "Doe is wat...." 
                 };
-                new CreateNewMarker().putMarkerOnMap( overLayInfo.osMap, overLayInfo.osMapName, arrJson );
-            });
-        }
-
-        // Save and update information
-        onSaveClick()
-        {
-            document.getElementById("save").addEventListener("click", function()
-            {
-                if(dataset.insert == 0)
-                ;
-                alert("dataset.lat");
+                new CreateNewMarker().putMarkerOnMap( overLayInfo.osMap, overLayInfo.osMapName, arrJson, this, 1 );
             });
         }
 
@@ -282,18 +316,17 @@
         addTheEventListeners( overLayInfo, osView )
         {
             this.onNewMarkerClick( overLayInfo, osView );
-            this.onSaveClick();
         }
     }
 
     class MarkersDrag
     {
         constructor(){}
-        dragMarkerEventListners(osmap, marker, divMarker)
+        dragMarkerEventListners(osmap, marker, divMarker, divPopUpMarker)
         {
             var lonlat;
-            var lat = 0;
-            var lon = 0;
+            var lat = divPopUpMarker.dataset.lat;
+            var lon = divPopUpMarker.dataset.lon;
             var dragPan;
             osmap.getInteractions().forEach(function(interaction){
                 if (interaction instanceof ol.interaction.DragPan) {
@@ -329,8 +362,8 @@
                 console.log(lon + " Lat " + lat);
                 console.log(evt.coordinate);
 
-                divMarker.dataset.lon = lon; // evt.coordinate[0];
-                divMarker.dataset.lat = lat; // evt.coordinate[1];
+                divPopUpMarker.dataset.lon = lon; // evt.coordinate[0];
+                divPopUpMarker.dataset.lat = lat; // evt.coordinate[1];
 
                     // popUp.setPosition(evt.coordinate); // .setPopUpLatLonPosition(osmap, lat, lon);
 
@@ -343,12 +376,9 @@
 
     // http://jsfiddle.net/jonataswalker/rnzgfg89/
 
-    var evmap = new EventsMap();
-
     class Marker
     {
-        // Set the marker
-        setNewMarker( overLayInfo ) // osMap, osMapName, iNo, lat, lon)
+        setNewMarker( overLayInfo, evMap, insertNo ) // osMap, osMapName, iNo, lat, lon)
         {
             var mapDiv = document.getElementById(overLayInfo.osMapName);
 
@@ -361,9 +391,9 @@
             divMarker.className = "map-overlay-marker";
 
             // Add the latlon info into attribute
-            this.createAnAttribute(divMarker, "lat", parseFloat(overLayInfo.lat));
-            this.createAnAttribute(divMarker, "lon", parseFloat(overLayInfo.lon));
-            this.createAnAttribute(divMarker, "insert", 0);
+            this.createAnAttribute(divPopUpMarker, "lat", parseFloat(overLayInfo.lat));
+            this.createAnAttribute(divPopUpMarker, "lon", parseFloat(overLayInfo.lon));
+            this.createAnAttribute(divMarker, "insert", insertNo);
             this.createAnAttribute(divMarker, "berichtid", overLayInfo.berId);
 
             // Append the popup button to the marker
@@ -382,8 +412,11 @@
               });
               overLayInfo.osMap.addOverlay(marker); // Adds the marker on the map
 
-              divPopUpMarker.addEventListener("click", function(){ evmap.onMarkerClickPopUp(overLayInfo, divMarker); }); // Event Listener for popup
-              new MarkersDrag().dragMarkerEventListners( overLayInfo.osMap, marker, divMarker ); // Event Listeners for dragging marker
+              divPopUpMarker.addEventListener("click", function()
+              { 
+                  evMap.onMarkerClickPopUp(overLayInfo, divMarker, divPopUpMarker); 
+              }); // Event Listener for popup
+              new MarkersDrag().dragMarkerEventListners( overLayInfo.osMap, marker, divMarker, divPopUpMarker ); // Event Listeners for dragging marker
         }
 
         createAnAttribute(divMarker, attrName, value)
@@ -401,12 +434,12 @@
     {
         constructor(){}
 
-        putMarkersOnMap(osMap, osMapName, arrJson)
+        putMarkersOnMap(osMap, osMapName, arrJson, evMap)
         {
             for (let index = 0; index < arrJson.length; index++) 
             {
                 var marker = new Marker();
-                marker.setNewMarker( new OverLayInfo(osMap, osMapName, arrJson[index].locid, arrJson[index].latitude, arrJson[index].longitude, arrJson[index].bertitel, arrJson[index].bertext, arrJson[index].berichtid ) );
+                marker.setNewMarker( new OverLayInfo(osMap, osMapName, arrJson[index].locid, arrJson[index].latitude, arrJson[index].longitude, arrJson[index].bertitel, arrJson[index].bertext, arrJson[index].berichtid ), evMap, 0 );
             }
         }
     }
@@ -419,7 +452,7 @@
         {
             this.jsonres = jsonres;
         }
-        putTheJsonOnMap(osMap, osMapName)
+        putTheJsonOnMap(osMap, osMapName, evMap)
         {
             var monmap = new MarkersOnMap();
                     
@@ -430,7 +463,7 @@
                     var jsonObj = JSON.parse(xmlhttp$1.response); // JSON.parse(xmlhttp.response);
                     jsonObj = JSON.parse(jsonObj); // Parse JSON twice
 
-                    monmap.putMarkersOnMap(osMap, osMapName, jsonObj);
+                    monmap.putMarkersOnMap(osMap, osMapName, jsonObj, evMap);
                 }
             };
             xmlhttp$1.open("GET", this.jsonres, true);
@@ -439,6 +472,7 @@
     }
 
     // import VectorSource from 'ol/source/Vector';
+    var evmap;
 
     class OsmapStart
     {
@@ -469,62 +503,19 @@
                 view: this.view
               });
 
+              // Firt create EventsMap and popup
+              // Add the popup and event Listeners to the map
+              var popU = new PopUp("popup"); // popU.setPopUpinMap( new OverLayInfo(this.map, strDiv, "popup", 0,0,"","",0) );
+              
+              evmap = new EventsMap( this.map, strDiv, popU );
+              evmap.addPopUpInMap();
+
               // Put the Json on the map
               var jsonMap = new JsonOnMap(jsonAdres);
-              jsonMap.putTheJsonOnMap(this.map, strDiv);
-
-              // Create popup
-              // this.popUp = new PopUp("popup");
-
-              // Add the popup and event Listeners to the map
-              var popU = new PopUp("popup");
-              popU.setPopUpinMap( new OverLayInfo(this.map, strDiv, "popup", 0,0,"","",0) );
-              
-              var evmap = new EventsMap( this.map, strDiv );
-
+              jsonMap.putTheJsonOnMap(this.map, strDiv, evmap);
+           
               // Add the eventlisteners
-              // evmap.addTheEventListeners( new OverLayInfo( this.map, strDiv ), this.view );
-        }
-    }
-
-    class UtilFindAdresBarParam
-    {
-        constructor(){};
-
-        findGetParameter(parameterName) 
-        {
-            var result = null,
-                tmp = [];
-            window.location.search
-                .substr(1)
-                .split("&")
-                .forEach(function (item) {
-                tmp = item.split("=");
-                if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
-                });
-            return result;
-        }
-    }
-
-    class CreateHiddenInput
-    {
-        constructor(divname)
-        {
-            this.divname = divname;
-        }
-        createHiddenInput(name, value)
-        {
-            var input = document.createElement("input");
-            input.setAttribute("type", "hidden");
-            input.setAttribute("name", name);
-            input.setAttribute("value", value);
-
-            document.getElementById(this.divname).appendChild(input);
-        }
-        setHiddenInput(name, value)
-        {
-            var inputdoc = document.getElementById(name);
-            inputdoc.value = value;
+              evmap.addTheEventListeners( new OverLayInfo( this.map, strDiv ), this.view );
         }
     }
 
@@ -559,13 +550,9 @@
         }
     }
 
-    var utilparm = new UtilFindAdresBarParam(); // Get the id from parameter in url bar
-    var url = "http://localhost:63744/api/location/";
-    var klantId = utilparm.findGetParameter('klantid');
-
-    var m = new Main(url + klantId);
+    var m = new Main(URL + KLANTID);
     m.setupOSMapOnPage();
-    m.setupHiddenInputs(klantId);
+    m.setupHiddenInputs(KLANTID);
 
     // TEST UPDATE LOCATION
     // var updte = new UpdateLocation();

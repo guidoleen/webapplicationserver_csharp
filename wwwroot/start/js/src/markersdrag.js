@@ -1,11 +1,11 @@
 export class MarkersDrag
 {
     constructor(){}
-    dragMarkerEventListners(osmap, marker, divMarker)
+    dragMarkerEventListners(osmap, marker, divMarker, divPopUpMarker)
     {
         var lonlat;
-        var lat = 0;
-        var lon = 0;
+        var lat = divPopUpMarker.dataset.lat;
+        var lon = divPopUpMarker.dataset.lon;
         var dragPan;
         osmap.getInteractions().forEach(function(interaction){
             if (interaction instanceof ol.interaction.DragPan) {
@@ -41,8 +41,8 @@ export class MarkersDrag
             console.log(lon + " Lat " + lat);
             console.log(evt.coordinate);
 
-            divMarker.dataset.lon = lon; // evt.coordinate[0];
-            divMarker.dataset.lat = lat; // evt.coordinate[1];
+            divPopUpMarker.dataset.lon = lon; // evt.coordinate[0];
+            divPopUpMarker.dataset.lat = lat; // evt.coordinate[1];
 
                 // popUp.setPosition(evt.coordinate); // .setPopUpLatLonPosition(osmap, lat, lon);
 

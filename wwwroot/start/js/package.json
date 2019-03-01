@@ -9,6 +9,7 @@
   "scripts": {
     "build": "babel --presets es2015 src -d build",
     "rollup": "rollup src/main.js --file build/build.js --format iife",
+    "xtrajs": "rollup src/xtra.js --file build/xtra.js --format iife",
     "brow": "browserify src/main.js -o src/bundle.js"
   },
   "author": "",

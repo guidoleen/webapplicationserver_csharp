@@ -32,28 +32,13 @@ class Main
          crInput.createHiddenInput("bertext", "");
          crInput.createHiddenInput("berichtid", 0);
          crInput.createHiddenInput("klantid", klantid);
+         crInput.createHiddenInput("insert", -1);
     }
 }
 
 var m = new Main(URL + KLANTID);
 m.setupOSMapOnPage();
 m.setupHiddenInputs(KLANTID);
-
-// TEST UPDATE LOCATION
-// var updte = new UpdateLocation();
-
-// locid=42&latitude=52%2C3&longitude=4&bertitel=Dit+is+een+nieuwe+titel&bertext=Dit+is+een+text+over+deze+locatie&berichtid=2&klantid
-// (url, locid, latitude, longitude, berTitle, berText, berichtid, klantid)
-
-// updte.updateLocation(url + utilparm.findGetParameter('klantid'),
-//                     42,
-//                     new UtilConfertDecimalToString().convertdecimalstring(52.36586),
-//                     new UtilConfertDecimalToString().convertdecimalstring(4.36586),
-//                     "Dit is een nieuwe koffiekop", 
-//                     "zo ist maar net dus dat dan weer wel",
-//                     2,
-//                     utilparm.findGetParameter('klantid')
-//                     );
 
 // https://openlayers.org/en/latest/examples/overlay.html
 // https://code.lengstorf.com/learn-rollup-js/

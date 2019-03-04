@@ -80,10 +80,11 @@ export class PopUp
     {
         var strForm = "<form method='put' action='" + strApiUrl + "'>";
         strForm += "<span class='input-span'>Titel</span>";
-        strForm += "<input class='input-txt mrg-bottom' type='text' name='title'>";
+        strForm += "<input id='form_title' class='input-txt mrg-bottom' type='text' name='title'>";
         strForm += "<span class='input-span'>Bericht</span>";
-        strForm += "<input class='input-txt mrg-bottom' type='text' name='bericht'>";
-        strForm += "<div id='save' class='input-button' type='button' value='Save' onclick='save();' >Save</div>";
+        strForm += "<input id='form_bertext' class='input-txt mrg-bottom' type='text' name='bericht'>";
+        strForm += "<div id='save' class='input-button mrg-bottom' type='button' value='Save' onclick='save();' >Save</div>";
+        strForm += "<div id='delete' class='input-button delete-button' type='button' value='Save' onclick='deleteThis();' >Delete</div>";
         strForm += "</form>";
 
         return strForm;

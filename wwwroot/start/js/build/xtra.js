@@ -1,3 +1,4 @@
+// THIS SCRIPT USES THE SAVE, DELETE AND UPDATE FUNCTION IN THE POPUP...
 
 'use strict';
 // UTILS
@@ -26,6 +27,7 @@ var URL = "http://localhost:63744/api/location/";
 var utilparm = new UtilFindAdresBarParam(); // Get the id from parameter in url bar
 var KLANTID = utilparm.findGetParameter('klantid');
 
+// CLASS SECTION
     class CreateHiddenInput
     {
         constructor(divname)
@@ -47,7 +49,7 @@ var KLANTID = utilparm.findGetParameter('klantid');
             var inputdoc = document.getElementById(name);
             inputdoc.value = value;
         }
-        getHiddenInput(name)
+        getInputValue(name)
         {
             var inputdoc = document.getElementById(name);
             return inputdoc.value;
@@ -64,13 +66,13 @@ var KLANTID = utilparm.findGetParameter('klantid');
         updateLocation(url, locid, latitude, longitude, berTitle, berText, berichtid, klantid)
         {
           // locid=42&latitude=52%2C3&longitude=4&bertitel=Dit+is+een+nieuwe+titel&bertext=Dit+is+een+text+over+deze+locatie&berichtid=2&klantid=2        
-            var strdata = this.createPostDataString("locid", locid, "&");
-            strdata += this.createPostDataString("latitude", latitude, "&");
-            strdata += this.createPostDataString("longitude", longitude, "&");
-            strdata += this.createPostDataString("bertitel", berTitle, "&");
-            strdata += this.createPostDataString("bertext", berText, "&");
-            strdata += this.createPostDataString("berichtid", berichtid, "&");
-            strdata += this.createPostDataString("klantid", klantid, "");
+            var strdata = new CreatePostDataString().createPostDataString("locid", locid, "&");
+            strdata += new CreatePostDataString().createPostDataString("latitude", latitude, "&");
+            strdata += new CreatePostDataString().createPostDataString("longitude", longitude, "&");
+            strdata += new CreatePostDataString().createPostDataString("bertitel", berTitle, "&");
+            strdata += new CreatePostDataString().createPostDataString("bertext", berText, "&");
+            strdata += new CreatePostDataString().createPostDataString("berichtid", berichtid, "&");
+            strdata += new CreatePostDataString().createPostDataString("klantid", klantid, "");
     
             var xhr = new XMLHttpRequest();
             xhr.open("POST", url, true);
@@ -86,7 +88,74 @@ var KLANTID = utilparm.findGetParameter('klantid');
             }
             xhr.send(strdata);
         }
+    }
+
+///// INSERT Class
+class InsertLocation
+    {
+        constructor(){}
     
+        insertLocation(url, locid, latitude, longitude, berTitle, berText, berichtid, klantid)
+        {
+          // locid=42&latitude=52%2C3&longitude=4&bertitel=Dit+is+een+nieuwe+titel&bertext=Dit+is+een+text+over+deze+locatie&berichtid=2&klantid=2        
+            var strdata = new CreatePostDataString().createPostDataString("locid", locid, "&");
+            strdata += new CreatePostDataString().createPostDataString("latitude", latitude, "&");
+            strdata += new CreatePostDataString().createPostDataString("longitude", longitude, "&");
+            strdata += new CreatePostDataString().createPostDataString("bertitel", berTitle, "&");
+            strdata += new CreatePostDataString().createPostDataString("bertext", berText, "&");
+            strdata += new CreatePostDataString().createPostDataString("berichtid", berichtid, "&");
+            strdata += new CreatePostDataString().createPostDataString("klantid", klantid, "");
+    
+            var xhr = new XMLHttpRequest();
+            xhr.open("PUT", url, true);
+            xhr.setRequestHeader('Content-type','application/x-www-form-urlencoded; charset=utf-8');
+            xhr.onload = function () 
+            {
+                if (xhr.readyState == xhr.DONE && xhr.status == "200") 
+                {
+                  console.log(xhr.response + " " + strdata);
+                } else {
+                  console.log("Error in de verbinding...");
+                }
+            }
+            xhr.send(strdata);
+        }
+    }
+
+    ///// INSERT Class
+class DeleteLocation
+{
+    constructor(){}
+
+    deleteLocation(url, locid, latitude, longitude, berTitle, berText, berichtid, klantid)
+    {
+      // locid=42&latitude=52%2C3&longitude=4&bertitel=Dit+is+een+nieuwe+titel&bertext=Dit+is+een+text+over+deze+locatie&berichtid=2&klantid=2        
+        var strdata = new CreatePostDataString().createPostDataString("locid", locid, "&");
+        strdata += new CreatePostDataString().createPostDataString("latitude", latitude, "&");
+        strdata += new CreatePostDataString().createPostDataString("longitude", longitude, "&");
+        strdata += new CreatePostDataString().createPostDataString("bertitel", berTitle, "&");
+        strdata += new CreatePostDataString().createPostDataString("bertext", berText, "&");
+        strdata += new CreatePostDataString().createPostDataString("berichtid", berichtid, "&");
+        strdata += new CreatePostDataString().createPostDataString("klantid", klantid, "");
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("DELETE", url, true);
+        xhr.setRequestHeader('Content-type','application/x-www-form-urlencoded; charset=utf-8');
+        xhr.onload = function () 
+        {
+            if (xhr.readyState == xhr.DONE && xhr.status == "200") 
+            {
+              console.log(xhr.response + " " + strdata);
+            } else {
+              console.log("Error in de verbinding...");
+            }
+        }
+        xhr.send(strdata);
+    }
+}
+
+    class CreatePostDataString
+    {
         createPostDataString(key, value, amp)
         {
             return key + "=" + value + amp;
@@ -94,23 +163,61 @@ var KLANTID = utilparm.findGetParameter('klantid');
     }
 
 //// Util Class
+    var crHinput = new CreateHiddenInput();
     class XtraJs
     {
+
+        // Save PopUp
         savePopUpInfo()
         {
-            var crHinput = new CreateHiddenInput();
+            var locid = crHinput.getInputValue("locid");
+            var latitude = crHinput.getInputValue("latitude");
+            var longitude = crHinput.getInputValue("longitude");
+            var berTitle = this.checkIfFormInputEmpty(crHinput.getInputValue("form_title"), "bertitel");
+            var berText = this.checkIfFormInputEmpty(crHinput.getInputValue("form_bertext"), "bertext");
+            var berichtid = crHinput.getInputValue("berichtid");
 
-            var locid = crHinput.getHiddenInput("locid");
-            console.log(locid);
-            var latitude = crHinput.getHiddenInput("latitude");
-            var longitude = crHinput.getHiddenInput("longitude");
-            var berTitle = crHinput.getHiddenInput("bertitel");
-            var berText = crHinput.getHiddenInput("bertext");
-            var berichtid = crHinput.getHiddenInput("berichtid");
+            var insertYN = document.getElementById(crHinput.getInputValue("insert")).dataset.insert;
+            if( insertYN == 1 )
+            {
+                locid = 0;
+                new InsertLocation().insertLocation(URL + KLANTID, locid, latitude, longitude, berTitle, berText, berichtid, KLANTID);
+            }
 
-            new UpdateLocation().updateLocation(URL + KLANTID, locid, latitude, longitude, berTitle, berText, berichtid, KLANTID);
+            if( insertYN == 0 )
+            {
+                new UpdateLocation().updateLocation(URL + KLANTID, locid, latitude, longitude, berTitle, berText, berichtid, KLANTID);
+            }
 
-            console.log( crHinput.getHiddenInput("locid") + crHinput.getHiddenInput("bertitel") + crHinput.getHiddenInput("latitude") );
+            reloadMap();
+        }
+
+        // Delete Marker
+        deleteMarker()
+        {
+            var locid = crHinput.getInputValue("locid");
+            var latitude = 0;
+            var longitude = 0;
+            var berTitle = "";
+            var berText = "";
+            var berichtid = crHinput.getInputValue("berichtid");
+
+            var insertYN = document.getElementById(crHinput.getInputValue("insert")).dataset.insert;
+            if( insertYN == 0 )
+            {
+                new DeleteLocation().deleteLocation(URL + KLANTID, locid, latitude, longitude, berTitle, berText, berichtid, KLANTID);
+                reloadMap();
+            }
+        }
+
+        checkIfFormInputEmpty(value, altrnValue)
+        {
+            if( value == "" )
+            {
+                return crHinput.getInputValue(altrnValue);
+            }
+            else 
+                return value;
         }
     }
 
@@ -118,4 +225,13 @@ var KLANTID = utilparm.findGetParameter('klantid');
     {
         new XtraJs().savePopUpInfo();
     }
-    
+
+    function deleteThis()
+    {
+        new XtraJs().deleteMarker();
+    }
+
+    function reloadMap()
+    {
+        window.location.href = "index.html?klantid=" + KLANTID;
+    }

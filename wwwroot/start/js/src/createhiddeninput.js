@@ -20,7 +20,7 @@ export class CreateHiddenInput
         var inputdoc = document.getElementById(name);
         inputdoc.value = value;
     }
-    getHiddenInput(name)
+    getInputValue(name)
     {
         var inputdoc = document.getElementById(name);
         return inputdoc.value;

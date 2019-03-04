@@ -48,6 +48,6 @@ export class OsmapStart
           jsonMap.putTheJsonOnMap(this.map, strDiv, evmap);
        
           // Add the eventlisteners
-          evmap.addTheEventListeners( new OverLayInfo( this.map, strDiv ), this.view );
+          evmap.addTheEventListeners( new OverLayInfo( this.map, strDiv ), this.view, popU );
     }
 }

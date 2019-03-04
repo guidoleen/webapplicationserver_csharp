@@ -23,14 +23,14 @@ export class EventsMap
         return;
     }
 
-    onMarkerClickPopUp(overLayInfo, divMarker, divPopUpMarker, id)
+    onMarkerClickPopUp(overLayInfo, divMarker, divPopUpMarker, markerid)
     {
         // OLD STUFF // this.popup.setPopUpinMap( new OverLayInfo( overLayInfo.osMap, overLayInfo.osMapName, this.popupId, (overLayInfo.lon - this.lonCorr), overLayInfo.lat, overLayInfo.berTitle, overLayInfo.berText ), id ); // (osMap, osMapName, iNo, lat, lon)
         var lat = parseFloat(divPopUpMarker.dataset.lat);
         var lon = parseFloat(divPopUpMarker.dataset.lon);
 
         this.popup.setPopUpinMap( new OverLayInfo( overLayInfo.osMap, overLayInfo.osMapName, this.popupId, lon, 
-            lat, overLayInfo.berTitle, overLayInfo.berText ), id ); // (osMap, osMapName, iNo, lat, lon)
+            lat, overLayInfo.berTitle, overLayInfo.berText ), markerid ); // (osMap, osMapName, iNo, lat, lon)
         
         // Pass info to the hidden input types after popup clicked
         var crInput = new CreateHiddenInput("hiddeninput");
@@ -41,6 +41,7 @@ export class EventsMap
          crInput.setHiddenInput("bertitel", overLayInfo.berTitle);
          crInput.setHiddenInput("bertext", overLayInfo.berText);
          crInput.setHiddenInput("berichtid", divMarker.dataset.berichtid);
+         crInput.setHiddenInput("insert", markerid);
 
          // Show popup in osmap
         new MarkersEvents().markerShowPopup(this.popupId);
@@ -51,33 +52,30 @@ export class EventsMap
 
     // EventListeners
     // New single Marker on the map
-    onNewMarkerClick( overLayInfo, osView )
+    onNewMarkerClick( overLayInfo, osView, popU )
     {
         document.getElementById("create_newmarker").addEventListener("click", function()
         {
-            var geolocation = new ol.Geolocation({
-                    projection: osView.getProjection(),
-                    tracking: true
-                });
-
-            // console.log(geolocation.getPosition());
+            var position = ol.proj.transform( overLayInfo.osMap.getView().getCenter(), 'EPSG:3857', 'EPSG:4326' );
 
             var arrJson = {
-                "latitude": 51.1,    
-                "longitude": 5.1,
+                "latitude": position[1],    
+                "longitude": position[0],
                 "locid": Math.random(),
                 "klantid": 0,   
                 "berichtid": 2,
                 "bertitel": "Vul deze in...",    
                 "bertext": "Doe is wat...." 
             };
-            new CreateNewMarker().putMarkerOnMap( overLayInfo.osMap, overLayInfo.osMapName, arrJson, this, 1 );
+            // putMarkerOnMap(osMap, osMapName, arrJson, evMap, insertNo)
+            new CreateNewMarker().putMarkerOnMap( overLayInfo.osMap, overLayInfo.osMapName, arrJson, 
+                                                    new EventsMap( overLayInfo.osMap, overLayInfo.osMapName, popU ), 1 );
         });
     }
 
     // Add the EventListeners on MapStart
-    addTheEventListeners( overLayInfo, osView )
+    addTheEventListeners( overLayInfo, osView, popU )
     {
-        this.onNewMarkerClick( overLayInfo, osView );
+        this.onNewMarkerClick( overLayInfo, osView, popU );
     }
 }

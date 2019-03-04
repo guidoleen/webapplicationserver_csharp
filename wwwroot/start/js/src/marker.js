@@ -40,7 +40,7 @@ export class Marker
 
           divPopUpMarker.addEventListener("click", function()
           { 
-              evMap.onMarkerClickPopUp(overLayInfo, divMarker, divPopUpMarker); 
+              evMap.onMarkerClickPopUp(overLayInfo, divMarker, divPopUpMarker, divMarker.id); 
           }); // Event Listener for popup
           new MarkersDrag().dragMarkerEventListners( overLayInfo.osMap, marker, divMarker, divPopUpMarker ); // Event Listeners for dragging marker
     }

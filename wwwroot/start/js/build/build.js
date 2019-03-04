@@ -191,10 +191,11 @@
         {
             var strForm = "<form method='put' action='" + strApiUrl + "'>";
             strForm += "<span class='input-span'>Titel</span>";
-            strForm += "<input class='input-txt mrg-bottom' type='text' name='title'>";
+            strForm += "<input id='form_title' class='input-txt mrg-bottom' type='text' name='title'>";
             strForm += "<span class='input-span'>Bericht</span>";
-            strForm += "<input class='input-txt mrg-bottom' type='text' name='bericht'>";
-            strForm += "<div id='save' class='input-button' type='button' value='Save' onclick='save();' >Save</div>";
+            strForm += "<input id='form_bertext' class='input-txt mrg-bottom' type='text' name='bericht'>";
+            strForm += "<div id='save' class='input-button mrg-bottom' type='button' value='Save' onclick='save();' >Save</div>";
+            strForm += "<div id='delete' class='input-button delete-button' type='button' value='Save' onclick='deleteThis();' >Delete</div>";
             strForm += "</form>";
 
             return strForm;
@@ -235,7 +236,7 @@
             var inputdoc = document.getElementById(name);
             inputdoc.value = value;
         }
-        getHiddenInput(name)
+        getInputValue(name)
         {
             var inputdoc = document.getElementById(name);
             return inputdoc.value;
@@ -260,14 +261,14 @@
             return;
         }
 
-        onMarkerClickPopUp(overLayInfo, divMarker, divPopUpMarker, id)
+        onMarkerClickPopUp(overLayInfo, divMarker, divPopUpMarker, markerid)
         {
             // OLD STUFF // this.popup.setPopUpinMap( new OverLayInfo( overLayInfo.osMap, overLayInfo.osMapName, this.popupId, (overLayInfo.lon - this.lonCorr), overLayInfo.lat, overLayInfo.berTitle, overLayInfo.berText ), id ); // (osMap, osMapName, iNo, lat, lon)
             var lat = parseFloat(divPopUpMarker.dataset.lat);
             var lon = parseFloat(divPopUpMarker.dataset.lon);
 
             this.popup.setPopUpinMap( new OverLayInfo( overLayInfo.osMap, overLayInfo.osMapName, this.popupId, lon, 
-                lat, overLayInfo.berTitle, overLayInfo.berText ), id ); // (osMap, osMapName, iNo, lat, lon)
+                lat, overLayInfo.berTitle, overLayInfo.berText ), markerid ); // (osMap, osMapName, iNo, lat, lon)
             
             // Pass info to the hidden input types after popup clicked
             var crInput = new CreateHiddenInput("hiddeninput");
@@ -278,6 +279,7 @@
              crInput.setHiddenInput("bertitel", overLayInfo.berTitle);
              crInput.setHiddenInput("bertext", overLayInfo.berText);
              crInput.setHiddenInput("berichtid", divMarker.dataset.berichtid);
+             crInput.setHiddenInput("insert", markerid);
 
              // Show popup in osmap
             new MarkersEvents().markerShowPopup(this.popupId);
@@ -288,34 +290,31 @@
 
         // EventListeners
         // New single Marker on the map
-        onNewMarkerClick( overLayInfo, osView )
+        onNewMarkerClick( overLayInfo, osView, popU )
         {
             document.getElementById("create_newmarker").addEventListener("click", function()
             {
-                var geolocation = new ol.Geolocation({
-                        projection: osView.getProjection(),
-                        tracking: true
-                    });
-
-                // console.log(geolocation.getPosition());
+                var position = ol.proj.transform( overLayInfo.osMap.getView().getCenter(), 'EPSG:3857', 'EPSG:4326' );
 
                 var arrJson = {
-                    "latitude": 51.1,    
-                    "longitude": 5.1,
+                    "latitude": position[1],    
+                    "longitude": position[0],
                     "locid": Math.random(),
                     "klantid": 0,   
                     "berichtid": 2,
                     "bertitel": "Vul deze in...",    
                     "bertext": "Doe is wat...." 
                 };
-                new CreateNewMarker().putMarkerOnMap( overLayInfo.osMap, overLayInfo.osMapName, arrJson, this, 1 );
+                // putMarkerOnMap(osMap, osMapName, arrJson, evMap, insertNo)
+                new CreateNewMarker().putMarkerOnMap( overLayInfo.osMap, overLayInfo.osMapName, arrJson, 
+                                                        new EventsMap( overLayInfo.osMap, overLayInfo.osMapName, popU ), 1 );
             });
         }
 
         // Add the EventListeners on MapStart
-        addTheEventListeners( overLayInfo, osView )
+        addTheEventListeners( overLayInfo, osView, popU )
         {
-            this.onNewMarkerClick( overLayInfo, osView );
+            this.onNewMarkerClick( overLayInfo, osView, popU );
         }
     }
 
@@ -414,7 +413,7 @@
 
               divPopUpMarker.addEventListener("click", function()
               { 
-                  evMap.onMarkerClickPopUp(overLayInfo, divMarker, divPopUpMarker); 
+                  evMap.onMarkerClickPopUp(overLayInfo, divMarker, divPopUpMarker, divMarker.id); 
               }); // Event Listener for popup
               new MarkersDrag().dragMarkerEventListners( overLayInfo.osMap, marker, divMarker, divPopUpMarker ); // Event Listeners for dragging marker
         }
@@ -515,7 +514,7 @@
               jsonMap.putTheJsonOnMap(this.map, strDiv, evmap);
            
               // Add the eventlisteners
-              evmap.addTheEventListeners( new OverLayInfo( this.map, strDiv ), this.view );
+              evmap.addTheEventListeners( new OverLayInfo( this.map, strDiv ), this.view, popU );
         }
     }
 
@@ -547,28 +546,13 @@
              crInput.createHiddenInput("bertext", "");
              crInput.createHiddenInput("berichtid", 0);
              crInput.createHiddenInput("klantid", klantid);
+             crInput.createHiddenInput("insert", -1);
         }
     }
 
     var m = new Main(URL + KLANTID);
     m.setupOSMapOnPage();
     m.setupHiddenInputs(KLANTID);
-
-    // TEST UPDATE LOCATION
-    // var updte = new UpdateLocation();
-
-    // locid=42&latitude=52%2C3&longitude=4&bertitel=Dit+is+een+nieuwe+titel&bertext=Dit+is+een+text+over+deze+locatie&berichtid=2&klantid
-    // (url, locid, latitude, longitude, berTitle, berText, berichtid, klantid)
-
-    // updte.updateLocation(url + utilparm.findGetParameter('klantid'),
-    //                     42,
-    //                     new UtilConfertDecimalToString().convertdecimalstring(52.36586),
-    //                     new UtilConfertDecimalToString().convertdecimalstring(4.36586),
-    //                     "Dit is een nieuwe koffiekop", 
-    //                     "zo ist maar net dus dat dan weer wel",
-    //                     2,
-    //                     utilparm.findGetParameter('klantid')
-    //                     );
 
     // https://openlayers.org/en/latest/examples/overlay.html
     // https://code.lengstorf.com/learn-rollup-js/

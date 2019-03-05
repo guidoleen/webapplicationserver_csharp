@@ -3,6 +3,7 @@ C:\Users\guido_leen\source\repos\WebApplicationSERVER\WebApplicationSERVER\bin\D
 C:\Users\guido_leen\source\repos\WebApplicationSERVER\WebApplicationSERVER\bin\Debug\netcoreapp2.1\WebApplicationSERVER.runtimeconfig.dev.json
 C:\Users\guido_leen\source\repos\WebApplicationSERVER\WebApplicationSERVER\bin\Debug\netcoreapp2.1\WebApplicationSERVER.dll
 C:\Users\guido_leen\source\repos\WebApplicationSERVER\WebApplicationSERVER\bin\Debug\netcoreapp2.1\WebApplicationSERVER.pdb
+C:\Users\guido_leen\source\repos\WebApplicationSERVER\WebApplicationSERVER\obj\Debug\netcoreapp2.1\WebApplicationSERVER.csprojAssemblyReference.cache
 C:\Users\guido_leen\source\repos\WebApplicationSERVER\WebApplicationSERVER\obj\Debug\netcoreapp2.1\WebApplicationSERVER.csproj.CoreCompileInputs.cache
 C:\Users\guido_leen\source\repos\WebApplicationSERVER\WebApplicationSERVER\obj\Debug\netcoreapp2.1\WebApplicationSERVER.RazorAssemblyInfo.cache
 C:\Users\guido_leen\source\repos\WebApplicationSERVER\WebApplicationSERVER\obj\Debug\netcoreapp2.1\WebApplicationSERVER.RazorAssemblyInfo.cs
@@ -11,4 +12,3 @@ C:\Users\guido_leen\source\repos\WebApplicationSERVER\WebApplicationSERVER\obj\D
 C:\Users\guido_leen\source\repos\WebApplicationSERVER\WebApplicationSERVER\obj\Debug\netcoreapp2.1\WebApplicationSERVER.RazorTargetAssemblyInfo.cache
 C:\Users\guido_leen\source\repos\WebApplicationSERVER\WebApplicationSERVER\obj\Debug\netcoreapp2.1\WebApplicationSERVER.dll
 C:\Users\guido_leen\source\repos\WebApplicationSERVER\WebApplicationSERVER\obj\Debug\netcoreapp2.1\WebApplicationSERVER.pdb
-C:\Users\guido_leen\source\repos\WebApplicationSERVER\WebApplicationSERVER\obj\Debug\netcoreapp2.1\WebApplicationSERVER.csprojAssemblyReference.cache

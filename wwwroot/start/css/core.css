@@ -30,6 +30,21 @@ html, body
     width: 50%;
     margin: 0 auto;
 }
+.map-overlay-newmarker
+{
+    /* cursor: pointer; */
+    cursor: move;
+    border-radius: 10px;
+    width: 20px;
+    height: 20px;
+    border: 0px;
+    /* position: absolute; */
+    top: 0px;
+    left: 0px;
+    z-index: 1;
+    background: #00ce2d;
+    z-index: 1;
+}
 .map-overlay-marker
 {
     /* cursor: pointer; */
@@ -147,7 +162,8 @@ html, body
     text-decoration:none;
   }
   .butt-regular:hover {
-    background-color:#5cbf2a;
+    background-color:#ffffff;
+    color: #338f4c;
   }
   .butt-regular:active {
     position:relative;

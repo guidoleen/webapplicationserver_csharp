@@ -69,13 +69,28 @@ export class EventsMap
             };
             // putMarkerOnMap(osMap, osMapName, arrJson, evMap, insertNo)
             new CreateNewMarker().putMarkerOnMap( overLayInfo.osMap, overLayInfo.osMapName, arrJson, 
-                                                    new EventsMap( overLayInfo.osMap, overLayInfo.osMapName, popU ), 1 );
+                                                    new EventsMap( overLayInfo.osMap, overLayInfo.osMapName, popU ), 1, // 1 => Insert nummer == true
+                                                    "map-overlay-newmarker" ); 
         });
+    }
+
+    onMapDragging( overLayInfo )
+    {
+        var crInput = new CreateHiddenInput("hiddeninput");
+        var position;
+
+            overLayInfo.osMap.on('moveend', function(ev) {
+            position = ol.proj.transform( this.getView().getCenter(), 'EPSG:3857', 'EPSG:4326' );
+
+            crInput.setHiddenInput("C_HLAT", position[1]);
+            crInput.setHiddenInput("C_HLON", position[0]);
+          });
     }
 
     // Add the EventListeners on MapStart
     addTheEventListeners( overLayInfo, osView, popU )
     {
         this.onNewMarkerClick( overLayInfo, osView, popU );
+        this.onMapDragging( overLayInfo );
     }
 }

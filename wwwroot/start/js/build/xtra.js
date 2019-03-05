@@ -26,6 +26,8 @@ var URL = "http://localhost:63744/api/location/";
 
 var utilparm = new UtilFindAdresBarParam(); // Get the id from parameter in url bar
 var KLANTID = utilparm.findGetParameter('klantid');
+var C_LAT = utilparm.findGetParameter('lat');
+var C_LON = utilparm.findGetParameter('lon');
 
 // CLASS SECTION
     class CreateHiddenInput
@@ -233,5 +235,7 @@ class DeleteLocation
 
     function reloadMap()
     {
-        window.location.href = "index.html?klantid=" + KLANTID;
+        window.location.href = "index.html?klantid=" + KLANTID + "&" +
+        "lat=" + crHinput.getInputValue("C_HLAT") + "&" +
+        "lon=" + crHinput.getInputValue("C_HLON");
     }

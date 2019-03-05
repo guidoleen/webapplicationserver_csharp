@@ -8,16 +8,21 @@ import { UtilConfertDecimalToString } from './utilconfertdecimaltostring';
 
 class Main
 {
-    constructor(jsonAdres)
+    constructor(jsonAdres, C_lat, C_lon)
     {
         this.jsonAdres = jsonAdres;
+        this.C_lon = C_lon;
+        this.C_lat = C_lat;
     }
 
     // Open Street Map class and put markers there
     setupOSMapOnPage()
     {
+        var c_lat = this.IsEmpty(this.C_lat) ? 52 : this.C_lat;
+        var c_lon = this.IsEmpty(this.C_lon) ? 5 : this.C_lon;
+
         var osmap = new OsmapStart(); 
-        osmap.setupOSMap(this.jsonAdres, "osmap", 5, 52, 8);
+        osmap.setupOSMap(this.jsonAdres, "osmap", parseFloat(c_lon), parseFloat(c_lat), 8);
     }
 
     setupHiddenInputs(klantid)
@@ -33,10 +38,19 @@ class Main
          crInput.createHiddenInput("berichtid", 0);
          crInput.createHiddenInput("klantid", klantid);
          crInput.createHiddenInput("insert", -1);
+         crInput.createHiddenInput("C_HLAT", 0);
+         crInput.createHiddenInput("C_HLON", 0);
+    }
+
+    IsEmpty(value)
+    {
+        if(value === undefined || value === "" || value === null )
+            return true;
+        return false;
     }
 }
 
-var m = new Main(URL + KLANTID);
+var m = new Main(URL + KLANTID, C_LAT, C_LON);
 m.setupOSMapOnPage();
 m.setupHiddenInputs(KLANTID);
 

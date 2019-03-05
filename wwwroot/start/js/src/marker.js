@@ -4,7 +4,7 @@ import { MarkersDrag } from './markersdrag';
 
 export class Marker
 {
-    setNewMarker( overLayInfo, evMap, insertNo ) // osMap, osMapName, iNo, lat, lon)
+    setNewMarker( overLayInfo, evMap, insertNo, markerCss ) // osMap, osMapName, iNo, lat, lon)
     {
         var mapDiv = document.getElementById(overLayInfo.osMapName);
 
@@ -14,7 +14,7 @@ export class Marker
 
         var divMarker = document.createElement("div");
         divMarker.id = overLayInfo.iNo;
-        divMarker.className = "map-overlay-marker";
+        divMarker.className = markerCss; // "map-overlay-marker";
 
         // Add the latlon info into attribute
         this.createAnAttribute(divPopUpMarker, "lat", parseFloat(overLayInfo.lat));

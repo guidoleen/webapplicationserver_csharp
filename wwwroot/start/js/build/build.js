@@ -206,10 +206,11 @@
     {
         constructor(){}
 
-        putMarkerOnMap(osMap, osMapName, arrJson, evMap, insertNo)
+        putMarkerOnMap(osMap, osMapName, arrJson, evMap, insertNo, markerCss)
         {
             var marker = new Marker();
-            marker.setNewMarker( new OverLayInfo(osMap, osMapName, arrJson.locid, arrJson.latitude, arrJson.longitude, arrJson.bertitel, arrJson.bertext, arrJson.berichtid ), evMap, insertNo );
+            marker.setNewMarker( new OverLayInfo(osMap, osMapName, arrJson.locid, arrJson.latitude, arrJson.longitude, arrJson.bertitel, arrJson.bertext, arrJson.berichtid ), 
+                                evMap, insertNo, markerCss );
         }
     }
 
@@ -307,14 +308,29 @@
                 };
                 // putMarkerOnMap(osMap, osMapName, arrJson, evMap, insertNo)
                 new CreateNewMarker().putMarkerOnMap( overLayInfo.osMap, overLayInfo.osMapName, arrJson, 
-                                                        new EventsMap( overLayInfo.osMap, overLayInfo.osMapName, popU ), 1 );
+                                                        new EventsMap( overLayInfo.osMap, overLayInfo.osMapName, popU ), 1, // 1 => Insert nummer == true
+                                                        "map-overlay-newmarker" ); 
             });
+        }
+
+        onMapDragging( overLayInfo )
+        {
+            var crInput = new CreateHiddenInput("hiddeninput");
+            var position;
+
+                overLayInfo.osMap.on('moveend', function(ev) {
+                position = ol.proj.transform( this.getView().getCenter(), 'EPSG:3857', 'EPSG:4326' );
+
+                crInput.setHiddenInput("C_HLAT", position[1]);
+                crInput.setHiddenInput("C_HLON", position[0]);
+              });
         }
 
         // Add the EventListeners on MapStart
         addTheEventListeners( overLayInfo, osView, popU )
         {
             this.onNewMarkerClick( overLayInfo, osView, popU );
+            this.onMapDragging( overLayInfo );
         }
     }
 
@@ -377,7 +393,7 @@
 
     class Marker
     {
-        setNewMarker( overLayInfo, evMap, insertNo ) // osMap, osMapName, iNo, lat, lon)
+        setNewMarker( overLayInfo, evMap, insertNo, markerCss ) // osMap, osMapName, iNo, lat, lon)
         {
             var mapDiv = document.getElementById(overLayInfo.osMapName);
 
@@ -387,7 +403,7 @@
 
             var divMarker = document.createElement("div");
             divMarker.id = overLayInfo.iNo;
-            divMarker.className = "map-overlay-marker";
+            divMarker.className = markerCss; // "map-overlay-marker";
 
             // Add the latlon info into attribute
             this.createAnAttribute(divPopUpMarker, "lat", parseFloat(overLayInfo.lat));
@@ -438,7 +454,8 @@
             for (let index = 0; index < arrJson.length; index++) 
             {
                 var marker = new Marker();
-                marker.setNewMarker( new OverLayInfo(osMap, osMapName, arrJson[index].locid, arrJson[index].latitude, arrJson[index].longitude, arrJson[index].bertitel, arrJson[index].bertext, arrJson[index].berichtid ), evMap, 0 );
+                marker.setNewMarker( new OverLayInfo(osMap, osMapName, arrJson[index].locid, arrJson[index].latitude, arrJson[index].longitude, arrJson[index].bertitel, arrJson[index].bertext, arrJson[index].berichtid ), 
+                evMap, 0, "map-overlay-marker" );
             }
         }
     }
@@ -522,16 +539,21 @@
 
     class Main
     {
-        constructor(jsonAdres)
+        constructor(jsonAdres, C_lat, C_lon)
         {
             this.jsonAdres = jsonAdres;
+            this.C_lon = C_lon;
+            this.C_lat = C_lat;
         }
 
         // Open Street Map class and put markers there
         setupOSMapOnPage()
         {
+            var c_lat = this.IsEmpty(this.C_lat) ? 52 : this.C_lat;
+            var c_lon = this.IsEmpty(this.C_lon) ? 5 : this.C_lon;
+
             var osmap = new OsmapStart(); 
-            osmap.setupOSMap(this.jsonAdres, "osmap", 5, 52, 8);
+            osmap.setupOSMap(this.jsonAdres, "osmap", parseFloat(c_lon), parseFloat(c_lat), 8);
         }
 
         setupHiddenInputs(klantid)
@@ -547,10 +569,19 @@
              crInput.createHiddenInput("berichtid", 0);
              crInput.createHiddenInput("klantid", klantid);
              crInput.createHiddenInput("insert", -1);
+             crInput.createHiddenInput("C_HLAT", 0);
+             crInput.createHiddenInput("C_HLON", 0);
+        }
+
+        IsEmpty(value)
+        {
+            if(value === undefined || value === "" || value === null )
+                return true;
+            return false;
         }
     }
 
-    var m = new Main(URL + KLANTID);
+    var m = new Main(URL + KLANTID, C_LAT, C_LON);
     m.setupOSMapOnPage();
     m.setupHiddenInputs(KLANTID);
 

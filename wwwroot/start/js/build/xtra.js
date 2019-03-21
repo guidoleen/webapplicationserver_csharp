@@ -23,6 +23,7 @@ class UtilFindAdresBarParam
 
 // GLOBALS CONSANTS
 var URL = "http://localhost:63744/api/location/";
+var URL2 = "http://localhost:63744/api/location/";
 
 var utilparm = new UtilFindAdresBarParam(); // Get the id from parameter in url bar
 var KLANTID = utilparm.findGetParameter('klantid');
@@ -164,6 +165,33 @@ class DeleteLocation
         }
     }
 
+// LOGIN class
+        class Login
+        {
+            constructor(){}
+    
+            login(url, klantid, email, pwd)
+            {
+                var strdata = new CreatePostDataString().createPostDataString("klantid", klantid, "&");
+                strdata += new CreatePostDataString().createPostDataString("email", email, "&");
+                strdata += new CreatePostDataString().createPostDataString("pwd", pwd, "");
+    
+                var xhr = new XMLHttpRequest();
+                xhr.open("DELETE", url, true);
+                xhr.setRequestHeader('Content-type','application/x-www-form-urlencoded; charset=utf-8');
+                xhr.onload = function () 
+                {
+                    if (xhr.readyState == xhr.DONE && xhr.status == "200") 
+                    {
+                    console.log(xhr.response + " " + strdata);
+                    } else {
+                    console.log("Error in de verbinding...");
+                    }
+                }
+                xhr.send(strdata);
+            }
+        }
+
 //// Util Class
     var crHinput = new CreateHiddenInput();
     class XtraJs
@@ -212,6 +240,18 @@ class DeleteLocation
             }
         }
 
+        // Login Member
+        loginMember()
+        {
+            // var sessionid = crHinput.getInputValue("sessionid");
+            // var sessiontoken = crHinput.getInputValue("sessiontoken");
+            var email = crHinput.getInputValue("email");
+            var pwd = crHinput.getInputValue("pwd");
+
+            new Login().login(URL + KLANTID + "/1", KLANTID, email, pwd); // 1 == login in C#
+            // reloadMap();
+        }
+
         checkIfFormInputEmpty(value, altrnValue)
         {
             if( value == "" )
@@ -223,6 +263,7 @@ class DeleteLocation
         }
     }
 
+    // Call functions
     function save()
     {
         new XtraJs().savePopUpInfo();
@@ -231,6 +272,11 @@ class DeleteLocation
     function deleteThis()
     {
         new XtraJs().deleteMarker();
+    }
+
+    function loginThis()
+    {
+        new XtraJs().loginMember();
     }
 
     function reloadMap()

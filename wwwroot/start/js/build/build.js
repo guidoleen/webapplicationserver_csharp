@@ -571,6 +571,8 @@
              crInput.createHiddenInput("insert", -1);
              crInput.createHiddenInput("C_HLAT", 0);
              crInput.createHiddenInput("C_HLON", 0);
+             crInput.createHiddenInput("sessionid", 0);
+             crInput.createHiddenInput("sessiontoken", 0);
         }
 
         IsEmpty(value)
@@ -581,6 +583,7 @@
         }
     }
 
+    // Call the main class
     var m = new Main(URL + KLANTID, C_LAT, C_LON);
     m.setupOSMapOnPage();
     m.setupHiddenInputs(KLANTID);

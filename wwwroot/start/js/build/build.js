@@ -460,6 +460,45 @@
         }
     }
 
+    class Cookie
+    {
+         setCookie(cname,cvalue,exdays) {
+            var d = new Date();
+            d.setTime(d.getTime() + (exdays*24*60*60*1000));
+            var expires = "expires=" + d.toGMTString();
+            document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+          }
+          
+        getCookie(cname) {
+            var name = cname + "=";
+            var decodedCookie = decodeURIComponent(document.cookie);
+            var ca = decodedCookie.split(';');
+            for(var i = 0; i < ca.length; i++) {
+              var c = ca[i];
+              while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+              }
+              if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+              }
+            }
+            return "";
+          }
+
+          deleteCookie()
+          {
+            document.cookie = "username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+          }
+    }
+
+    class CreatePostDataString
+        {
+            createPostDataString(key, value, amp)
+            {
+                return key + "=" + value + amp;
+            }
+        }
+
     var xmlhttp$1 = new XMLHttpRequest();
 
     class JsonOnMap
@@ -471,10 +510,20 @@
         putTheJsonOnMap(osMap, osMapName, evMap)
         {
             var monmap = new MarkersOnMap();
-                    
-            xmlhttp$1.onreadystatechange = function()
+
+            // Data from cookie to c#
+            var sessionId = new Cookie().getCookie("sessionid");
+            var sessionToken = new Cookie().getCookie("sessiontoken");
+
+            var strdata = new CreatePostDataString().createPostDataString("sessionid", sessionId, "&");
+            strdata += new CreatePostDataString().createPostDataString("sessiontoken", sessionToken, "");
+
+            xmlhttp$1.open("POST", this.jsonres, true); // http://localhost:63744/api/location/2/1/1
+            xmlhttp$1.setRequestHeader('Content-type','application/x-www-form-urlencoded; charset=utf-8');
+
+            xmlhttp$1.onload = function()
             {
-                if(this.readyState == 4 && this.status == 200)
+                if(this.readyState == xmlhttp$1.DONE && xmlhttp$1.status == "200")
                 {
                     var jsonObj = JSON.parse(xmlhttp$1.response); // JSON.parse(xmlhttp.response);
                     jsonObj = JSON.parse(jsonObj); // Parse JSON twice
@@ -482,8 +531,7 @@
                     monmap.putMarkersOnMap(osMap, osMapName, jsonObj, evMap);
                 }
             };
-            xmlhttp$1.open("GET", this.jsonres, true);
-            xmlhttp$1.send();
+            xmlhttp$1.send(strdata);
         }
     }
 
@@ -537,6 +585,82 @@
 
     var xmlhttp$2 = new XMLHttpRequest();
 
+    class Modal
+    {
+        constructor()
+        {
+        }
+
+        setCloseX()
+        {
+            return "<div id='modal_closer' class='ol-popup-closer'></div>";
+        }
+
+        setH3(strTitle)
+        {
+            return "<h3 class='ol-popup-h3'>" + strTitle + "</h3>";
+        }
+
+        setP(strText)
+        {
+            return "<p class='ol-popup-p'>" + strText + "</p>";
+        }
+
+        setLoginForm()
+        {
+            var strForm = "<form>";
+            strForm += "<span class=''>User</span>";
+            strForm += "<input id='email' type='text' class='input-txt mrg-bottom'><br>";
+            strForm += "<span class=''>Password</span>";
+            strForm += "<input id='pwd' type='password' class='input-txt mrg-bottom'>";
+            strForm += "<a id='login' class='input-button mrg-bottom' onclick='loginThis();'>Login</a>";
+            strForm += "</form>";
+
+            return strForm;
+        }
+
+        setLogOutButton()
+        {
+            return "<a id='logout' class='input-button delete-button mrg-bottom' onclick='logOutThis();'>LogOut</a>";
+        }
+
+        setDivOverallModal(h3)
+        {
+            var overallDiv = document.getElementById("modal");
+
+            var modalCentreDiv = document.createElement("div");
+            modalCentreDiv.className = "modal-centrediv";
+
+                var modalDiv = document.createElement("div");
+                modalDiv.className = "modal-modaldiv";
+                modalDiv.innerHTML = this.setCloseX() + this.setH3(h3) + this.setLoginForm() + this.setLogOutButton();
+
+            var modalDivBack = document.createElement("div");
+            modalDivBack.className = "modal-modaldiv-backgr";
+
+            modalCentreDiv.appendChild(modalDiv);
+            overallDiv.appendChild(modalCentreDiv);
+            overallDiv.appendChild(modalDivBack);
+
+            this.setEventClose();
+        }
+
+        setEventClose()
+        {
+            document.getElementById("modal_closer").addEventListener("click", function()
+            {
+                document.getElementById("modal").style.display = "none";
+            });
+        }
+        setEventOpen()
+        {
+            document.getElementById("modal_closer").addEventListener("click", function()
+            {
+                document.getElementById("modal").style.display = "block";
+            });
+        }
+    }
+
     class Main
     {
         constructor(jsonAdres, C_lat, C_lon)
@@ -575,6 +699,12 @@
              crInput.createHiddenInput("sessiontoken", 0);
         }
 
+        setUpModal()
+        {
+            var modal = new Modal();
+            modal.setDivOverallModal("Login");
+        }
+
         IsEmpty(value)
         {
             if(value === undefined || value === "" || value === null )
@@ -584,9 +714,18 @@
     }
 
     // Call the main class
-    var m = new Main(URL + KLANTID, C_LAT, C_LON);
+
+    var m = new Main(URL + KLANTID + "/1/1", C_LAT, C_LON);
     m.setupOSMapOnPage();
     m.setupHiddenInputs(KLANTID);
+    m.setUpModal();
+
+    console.log("Main: " + document.cookie + " " + KLANTID);
+    // http://localhost:63744/api/location/2/1/1 - POST - DISPLAY
+    // http://localhost:63744/api/location/2/1 - POST - LOGIN
+    // http://localhost:63744/api/location/2/0 - POST - LOGOUT
+    // http://localhost:63744/api/location/2 - POST - UPDATE
+    // http://localhost:63744/api/location/2 - PUT - INSERT
 
     // https://openlayers.org/en/latest/examples/overlay.html
     // https://code.lengstorf.com/learn-rollup-js/

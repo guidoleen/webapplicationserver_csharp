@@ -5,6 +5,7 @@ import { CreateHiddenInput } from './createhiddeninput';
 import { InsertLocation } from './insertlocation';
 import { UpdateLocation } from './updatelocation';
 import { UtilConfertDecimalToString } from './utilconfertdecimaltostring';
+import { Modal } from './modal';
 
 class Main
 {
@@ -44,6 +45,12 @@ class Main
          crInput.createHiddenInput("sessiontoken", 0);
     }
 
+    setUpModal()
+    {
+        var modal = new Modal();
+        modal.setDivOverallModal("Login");
+    }
+
     IsEmpty(value)
     {
         if(value === undefined || value === "" || value === null )
@@ -53,9 +60,18 @@ class Main
 }
 
 // Call the main class
-var m = new Main(URL + KLANTID, C_LAT, C_LON);
+
+var m = new Main(URL + KLANTID + "/1/1", C_LAT, C_LON);
 m.setupOSMapOnPage();
 m.setupHiddenInputs(KLANTID);
+m.setUpModal();
+
+console.log("Main: " + document.cookie + " " + KLANTID);
+// http://localhost:63744/api/location/2/1/1 - POST - DISPLAY
+// http://localhost:63744/api/location/2/1 - POST - LOGIN
+// http://localhost:63744/api/location/2/0 - POST - LOGOUT
+// http://localhost:63744/api/location/2 - POST - UPDATE
+// http://localhost:63744/api/location/2 - PUT - INSERT
 
 // https://openlayers.org/en/latest/examples/overlay.html
 // https://code.lengstorf.com/learn-rollup-js/

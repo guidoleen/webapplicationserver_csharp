@@ -206,3 +206,43 @@ html, body
   {
     background-color: #2dceff;
   }
+  .modal-overall
+  {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+  }
+  .modal-centrediv
+  {
+    margin: 0 auto;
+    width: 30%;
+  }
+  .modal-modaldiv
+  {
+    position: absolute;
+    background-color: white;
+    -webkit-filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+    filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid #cccccc;
+    bottom: 12px;
+    min-width: 280px;
+    z-index: 3;
+    top: 150px;
+    /* display: none; */
+    transition: all 0.5s;
+    z-index: 10;
+  }
+  .modal-modaldiv-backgr
+  {
+    background: #000;
+    width: 100%;
+    height: 100%;
+    top: 0px;
+    left: 0px;
+    position: absolute;
+    opacity: 0.5;
+  }

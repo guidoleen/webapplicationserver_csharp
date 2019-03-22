@@ -21,12 +21,44 @@ class UtilFindAdresBarParam
     }
 }
 
+///// Cookie Class
+class Cookie
+{
+    setCookie(cname,cvalue,exdays) {
+        var d = new Date();
+        d.setTime(d.getTime() + (exdays*24*60*60*1000));
+        var expires = "expires=" + d.toGMTString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+    }
+    
+    getCookie(cname) {
+        var name = cname + "=";
+        var decodedCookie = decodeURIComponent(document.cookie);
+        var ca = decodedCookie.split(';');
+        for(var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+        }
+        return "";
+    }
+
+    deleteCookie()
+    {
+        document.cookie = "username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    }
+} 
+
 // GLOBALS CONSANTS
 var URL = "http://localhost:63744/api/location/";
 var URL2 = "http://localhost:63744/api/location/";
 
 var utilparm = new UtilFindAdresBarParam(); // Get the id from parameter in url bar
-var KLANTID = utilparm.findGetParameter('klantid');
+var KLANTID = 0; // utilparm.findGetParameter('klantid');
 var C_LAT = utilparm.findGetParameter('lat');
 var C_LON = utilparm.findGetParameter('lon');
 
@@ -177,20 +209,33 @@ class DeleteLocation
                 strdata += new CreatePostDataString().createPostDataString("pwd", pwd, "");
     
                 var xhr = new XMLHttpRequest();
-                xhr.open("DELETE", url, true);
+                xhr.open("POST", url, true);
                 xhr.setRequestHeader('Content-type','application/x-www-form-urlencoded; charset=utf-8');
                 xhr.onload = function () 
                 {
                     if (xhr.readyState == xhr.DONE && xhr.status == "200") 
                     {
-                    console.log(xhr.response + " " + strdata);
-                    } else {
-                    console.log("Error in de verbinding...");
+                        var strjson = JSON.parse(xhr.response);
+                        strjson = JSON.parse(strjson);
+
+                        crHinput.setHiddenInput("sessionid", strjson[0].sessionid);
+                        crHinput.setHiddenInput("sessiontoken", strjson[0].sessiontoken);
+                        
+                        console.log(strjson);
+
+                        new Cookie().setCookie("klantid", strjson[0].klantid);
+                        new Cookie().setCookie("sessionid", strjson[0].sessionid);
+                        new Cookie().setCookie("sessiontoken", strjson[0].sessiontoken);
+                    } 
+                    else 
+                    {
+                        console.log("Error in de verbinding...");
                     }
                 }
                 xhr.send(strdata);
             }
         }
+
 
 //// Util Class
     var crHinput = new CreateHiddenInput();
@@ -207,14 +252,13 @@ class DeleteLocation
             var berText = this.checkIfFormInputEmpty(crHinput.getInputValue("form_bertext"), "bertext");
             var berichtid = crHinput.getInputValue("berichtid");
 
-            var insertYN = document.getElementById(crHinput.getInputValue("insert")).dataset.insert;
-            if( insertYN == 1 )
+            var insertYN = parseInt(document.getElementById(crHinput.getInputValue("insert")).dataset.insert);
+            if( insertYN == 1 ) // INSERT = 1
             {
                 locid = 0;
                 new InsertLocation().insertLocation(URL + KLANTID, locid, latitude, longitude, berTitle, berText, berichtid, KLANTID);
             }
-
-            if( insertYN == 0 )
+            if( insertYN == 0 ) // UPDATE = 0
             {
                 new UpdateLocation().updateLocation(URL + KLANTID, locid, latitude, longitude, berTitle, berText, berichtid, KLANTID);
             }
@@ -243,13 +287,26 @@ class DeleteLocation
         // Login Member
         loginMember()
         {
-            // var sessionid = crHinput.getInputValue("sessionid");
-            // var sessiontoken = crHinput.getInputValue("sessiontoken");
             var email = crHinput.getInputValue("email");
             var pwd = crHinput.getInputValue("pwd");
 
-            new Login().login(URL + KLANTID + "/1", KLANTID, email, pwd); // 1 == login in C#
-            // reloadMap();
+            // First Logout the previous session in db
+            // if( KLANTID != null )
+            //     new Login().login(URL + KLANTID + "/0", KLANTID, email, pwd); // 0 == logout in C#
+
+            // Then login for a new session in db
+            new Login().login(URL + "0/1", KLANTID, email, pwd); // 1 == login in C#
+            
+            reloadMap();
+        }
+
+        logoutMember()
+        {
+            var email = "";
+            var pwd = "";
+
+            new Login().login(URL + KLANTID + "/0", KLANTID, email, pwd); // 0 == logout in C#
+            new Cookie().deleteCookie();
         }
 
         checkIfFormInputEmpty(value, altrnValue)
@@ -277,6 +334,11 @@ class DeleteLocation
     function loginThis()
     {
         new XtraJs().loginMember();
+    }
+    
+    function logOutThis()
+    {
+        new XtraJs().logoutMember();
     }
 
     function reloadMap()

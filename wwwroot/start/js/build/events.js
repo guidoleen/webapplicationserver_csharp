@@ -58,9 +58,11 @@ var URL = "http://localhost:63744/api/location/";
 var URL2 = "http://localhost:63744/api/location/";
 
 var utilparm = new UtilFindAdresBarParam(); // Get the id from parameter in url bar
-var KLANTID = 0; // utilparm.findGetParameter('klantid');
+var KLANTID; // utilparm.findGetParameter('klantid');
 var C_LAT = utilparm.findGetParameter('lat');
 var C_LON = utilparm.findGetParameter('lon');
+
+var COOKIE_EXPR = 20; // Day's
 
 // CLASS SECTION
     class CreateHiddenInput
@@ -220,12 +222,12 @@ class DeleteLocation
 
                         crHinput.setHiddenInput("sessionid", strjson[0].sessionid);
                         crHinput.setHiddenInput("sessiontoken", strjson[0].sessiontoken);
-                        
-                        console.log(strjson);
 
-                        new Cookie().setCookie("klantid", strjson[0].klantid);
-                        new Cookie().setCookie("sessionid", strjson[0].sessionid);
-                        new Cookie().setCookie("sessiontoken", strjson[0].sessiontoken);
+                        new Cookie().setCookie("klantid", strjson[0].klantid, COOKIE_EXPR);
+                        new Cookie().setCookie("sessionid", strjson[0].sessionid, COOKIE_EXPR);
+                        new Cookie().setCookie("sessiontoken", strjson[0].sessiontoken, COOKIE_EXPR);
+
+                        reloadMap();
                     } 
                     else 
                     {
@@ -236,6 +238,83 @@ class DeleteLocation
             }
         }
 
+//// Modal Class
+class Modal
+{
+    constructor()
+    {
+    }
+
+    setCloseX()
+    {
+        return "<div id='modal_closer' class='ol-popup-closer'></div>";
+    }
+
+    setH3(strTitle)
+    {
+        return "<h3 class='ol-popup-h3'>" + strTitle + "</h3>";
+    }
+
+    setP(strText)
+    {
+        return "<p class='ol-popup-p'>" + strText + "</p>";
+    }
+
+    setLoginForm()
+    {
+        var strForm = "<form>";
+        strForm += "<span class=''>User</span>";
+        strForm += "<input id='email' type='text' class='input-txt mrg-bottom'><br>";
+        strForm += "<span class=''>Password</span>";
+        strForm += "<input id='pwd' type='password' class='input-txt mrg-bottom'>";
+        strForm += "<a id='login' class='input-button mrg-bottom' onclick='loginThis();'>Login</a>";
+        strForm += "</form>";
+
+        return strForm;
+    }
+
+    setLogOutButton()
+    {
+        return "<a id='logout' class='input-button delete-button mrg-bottom' onclick='logOutThis();'>LogOut</a>";
+    }
+
+    setDivOverallModal(h3)
+    {
+        var overallDiv = document.getElementById("modal");
+        overallDiv.style.height = "100%";
+
+        var modalCentreDiv = document.createElement("div");
+        modalCentreDiv.className = "modal-centrediv";
+
+            var modalDiv = document.createElement("div");
+            modalDiv.className = "modal-modaldiv";
+            modalDiv.innerHTML = this.setCloseX() + this.setH3(h3) + this.setLoginForm() + this.setLogOutButton();
+
+        var modalDivBack = document.createElement("div");
+        modalDivBack.className = "modal-modaldiv-backgr";
+
+        modalCentreDiv.appendChild(modalDiv);
+        overallDiv.appendChild(modalCentreDiv);
+        overallDiv.appendChild(modalDivBack);
+
+        this.setEventClose();
+    }
+
+    setEventClose()
+    {
+        document.getElementById("modal_closer").addEventListener("click", function()
+        {
+            document.getElementById("modal").style.display = "none";
+        });
+    }
+    setEventOpen()
+    {
+        document.getElementById("modal_closer").addEventListener("click", function()
+        {
+            document.getElementById("modal").style.display = "block";
+        });
+    }
+}
 
 //// Util Class
     var crHinput = new CreateHiddenInput();
@@ -289,21 +368,18 @@ class DeleteLocation
         {
             var email = crHinput.getInputValue("email");
             var pwd = crHinput.getInputValue("pwd");
-
-            // First Logout the previous session in db
-            // if( KLANTID != null )
-            //     new Login().login(URL + KLANTID + "/0", KLANTID, email, pwd); // 0 == logout in C#
-
+            
             // Then login for a new session in db
             new Login().login(URL + "0/1", KLANTID, email, pwd); // 1 == login in C#
-            
-            reloadMap();
         }
 
         logoutMember()
         {
             var email = "";
             var pwd = "";
+
+            KLANTID = new Cookie().getCookie('klantid');
+            if( KLANTID == undefined || KLANTID == 0 ) KLANTID = 0;
 
             new Login().login(URL + KLANTID + "/0", KLANTID, email, pwd); // 0 == logout in C#
             new Cookie().deleteCookie();
@@ -341,9 +417,16 @@ class DeleteLocation
         new XtraJs().logoutMember();
     }
 
+    function logInModalThis()
+    {
+        new Modal().setDivOverallModal("Login");
+    }
+
     function reloadMap()
     {
-        window.location.href = "index.html?klantid=" + KLANTID + "&" +
+        // window.location.replace("index.html");
+        // window.location.href = "index.html?klantid=" + KLANTID + "&" +
+        window.location.href = "index.html?" + 
         "lat=" + crHinput.getInputValue("C_HLAT") + "&" +
         "lon=" + crHinput.getInputValue("C_HLON");
     }

@@ -1,5 +1,3 @@
-import { MarkersEvents } from './markersevents';
-
 export class Modal
 {
     constructor()

@@ -5,7 +5,7 @@ import { CreateHiddenInput } from './createhiddeninput';
 import { InsertLocation } from './insertlocation';
 import { UpdateLocation } from './updatelocation';
 import { UtilConfertDecimalToString } from './utilconfertdecimaltostring';
-import { Modal } from './modal';
+import { Navigation } from './navigation';
 
 class Main
 {
@@ -45,10 +45,29 @@ class Main
          crInput.createHiddenInput("sessiontoken", 0);
     }
 
-    setUpModal()
+    setUpNavigation()
     {
-        var modal = new Modal();
-        modal.setDivOverallModal("Login");
+        var checkId = new Cookie().getCookie("klantid");
+        var objLogo = "WhereAreYouNow?";
+
+        if( parseInt(checkId) == 0 || checkId == undefined || checkId == '' ) // Logged out
+        {
+            var navigate = new Navigation({
+                El: "nav",
+                logo: objLogo,
+                NavList: [{val: "LogIn", call: "logInModalThis();"}]
+            });
+            navigate.setNavigationBar();
+        }
+        else // Logged in...
+        {
+            var navigate = new Navigation({
+                El: "nav",
+                logo: objLogo,
+                NavList: [{val: "LogOut", call: "logOutThis();"}]
+            });
+            navigate.setNavigationBar();
+        }
     }
 
     IsEmpty(value)
@@ -59,14 +78,14 @@ class Main
     }
 }
 
-// Call the main class
-
+// Call the main class and setup the different elements
+KLANTID = new Cookie().getCookie("klantid");
 var m = new Main(URL + KLANTID + "/1/1", C_LAT, C_LON);
 m.setupOSMapOnPage();
 m.setupHiddenInputs(KLANTID);
-m.setUpModal();
+m.setUpNavigation();
 
-console.log("Main: " + document.cookie + " " + KLANTID);
+console.log("Main: " + document.cookie + " KlantID: " + KLANTID);
 // http://localhost:63744/api/location/2/1/1 - POST - DISPLAY
 // http://localhost:63744/api/location/2/1 - POST - LOGIN
 // http://localhost:63744/api/location/2/0 - POST - LOGOUT

@@ -1,5 +1,4 @@
 import { JsonOnMap } from './jsononmap';
-import { Marker } from './marker';
 import { PopUp } from './popup';
 import { OverLayInfo } from './overlayinfo';
 import { EventsMap } from './eventsmap';

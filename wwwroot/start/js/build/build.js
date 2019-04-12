@@ -460,7 +460,7 @@
         }
     }
 
-    class Cookie
+    class Cookie$1
     {
          setCookie(cname,cvalue,exdays) {
             var d = new Date();
@@ -512,8 +512,8 @@
             var monmap = new MarkersOnMap();
 
             // Data from cookie to c#
-            var sessionId = new Cookie().getCookie("sessionid");
-            var sessionToken = new Cookie().getCookie("sessiontoken");
+            var sessionId = new Cookie$1().getCookie("sessionid");
+            var sessionToken = new Cookie$1().getCookie("sessiontoken");
 
             var strdata = new CreatePostDataString().createPostDataString("sessionid", sessionId, "&");
             strdata += new CreatePostDataString().createPostDataString("sessiontoken", sessionToken, "");
@@ -585,79 +585,35 @@
 
     var xmlhttp$2 = new XMLHttpRequest();
 
-    class Modal
+    class Navigation
     {
-        constructor()
+        constructor(navInfo)
         {
+            this.navInfo = navInfo;
         }
-
-        setCloseX()
+        setNavigationBar()
         {
-            return "<div id='modal_closer' class='ol-popup-closer'></div>";
+            var objEl = document.getElementById(this.navInfo.El);
+            objEl.innerHTML = this.createLogo() + this.createNavList();
         }
-
-        setH3(strTitle)
+        createLogo()
         {
-            return "<h3 class='ol-popup-h3'>" + strTitle + "</h3>";
+            return "<div class='logo'>" + this.navInfo.logo + "</div>";
         }
-
-        setP(strText)
+        createNavList()
         {
-            return "<p class='ol-popup-p'>" + strText + "</p>";
-        }
-
-        setLoginForm()
-        {
-            var strForm = "<form>";
-            strForm += "<span class=''>User</span>";
-            strForm += "<input id='email' type='text' class='input-txt mrg-bottom'><br>";
-            strForm += "<span class=''>Password</span>";
-            strForm += "<input id='pwd' type='password' class='input-txt mrg-bottom'>";
-            strForm += "<a id='login' class='input-button mrg-bottom' onclick='loginThis();'>Login</a>";
-            strForm += "</form>";
-
-            return strForm;
-        }
-
-        setLogOutButton()
-        {
-            return "<a id='logout' class='input-button delete-button mrg-bottom' onclick='logOutThis();'>LogOut</a>";
-        }
-
-        setDivOverallModal(h3)
-        {
-            var overallDiv = document.getElementById("modal");
-
-            var modalCentreDiv = document.createElement("div");
-            modalCentreDiv.className = "modal-centrediv";
-
-                var modalDiv = document.createElement("div");
-                modalDiv.className = "modal-modaldiv";
-                modalDiv.innerHTML = this.setCloseX() + this.setH3(h3) + this.setLoginForm() + this.setLogOutButton();
-
-            var modalDivBack = document.createElement("div");
-            modalDivBack.className = "modal-modaldiv-backgr";
-
-            modalCentreDiv.appendChild(modalDiv);
-            overallDiv.appendChild(modalCentreDiv);
-            overallDiv.appendChild(modalDivBack);
-
-            this.setEventClose();
-        }
-
-        setEventClose()
-        {
-            document.getElementById("modal_closer").addEventListener("click", function()
+            var arrUl = this.navInfo.NavList;
+            var strNavList = "<ul class='nav-list'>";
+            for (var index = 0; index < arrUl.length; index++) 
             {
-                document.getElementById("modal").style.display = "none";
-            });
+                strNavList += this.createLi(arrUl[index].val, arrUl[index].call);
+            }
+            strNavList += "</ul>";
+            return strNavList;
         }
-        setEventOpen()
+        createLi(strVal, jsCall)
         {
-            document.getElementById("modal_closer").addEventListener("click", function()
-            {
-                document.getElementById("modal").style.display = "block";
-            });
+            return "<li class='nav-list-item'><div onclick='" + jsCall + "'>" + strVal + "</div></li>";
         }
     }
 
@@ -699,10 +655,29 @@
              crInput.createHiddenInput("sessiontoken", 0);
         }
 
-        setUpModal()
+        setUpNavigation()
         {
-            var modal = new Modal();
-            modal.setDivOverallModal("Login");
+            var checkId = new Cookie().getCookie("klantid");
+            var objLogo = "WhereAreYouNow?";
+
+            if( parseInt(checkId) == 0 || checkId == undefined || checkId == '' ) // Logged out
+            {
+                var navigate = new Navigation({
+                    El: "nav",
+                    logo: objLogo,
+                    NavList: [{val: "LogIn", call: "logInModalThis();"}]
+                });
+                navigate.setNavigationBar();
+            }
+            else // Logged in...
+            {
+                var navigate = new Navigation({
+                    El: "nav",
+                    logo: objLogo,
+                    NavList: [{val: "LogOut", call: "logOutThis();"}]
+                });
+                navigate.setNavigationBar();
+            }
         }
 
         IsEmpty(value)
@@ -713,14 +688,14 @@
         }
     }
 
-    // Call the main class
-
+    // Call the main class and setup the different elements
+    KLANTID = new Cookie().getCookie("klantid");
     var m = new Main(URL + KLANTID + "/1/1", C_LAT, C_LON);
     m.setupOSMapOnPage();
     m.setupHiddenInputs(KLANTID);
-    m.setUpModal();
+    m.setUpNavigation();
 
-    console.log("Main: " + document.cookie + " " + KLANTID);
+    console.log("Main: " + document.cookie + " KlantID: " + KLANTID);
     // http://localhost:63744/api/location/2/1/1 - POST - DISPLAY
     // http://localhost:63744/api/location/2/1 - POST - LOGIN
     // http://localhost:63744/api/location/2/0 - POST - LOGOUT

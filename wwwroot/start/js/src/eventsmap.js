@@ -78,12 +78,15 @@ export class EventsMap
     {
         var crInput = new CreateHiddenInput("hiddeninput");
         var position;
+        var zoom;
 
             overLayInfo.osMap.on('moveend', function(ev) {
             position = ol.proj.transform( this.getView().getCenter(), 'EPSG:3857', 'EPSG:4326' );
+            zoom = this.getView().getZoom();
 
             crInput.setHiddenInput("C_HLAT", position[1]);
             crInput.setHiddenInput("C_HLON", position[0]);
+            crInput.setHiddenInput("zoom", zoom);
           });
     }
 

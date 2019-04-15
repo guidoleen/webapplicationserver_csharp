@@ -56,11 +56,13 @@ class Cookie
 // GLOBALS CONSANTS
 var URL = "http://localhost:63744/api/location/";
 var URL2 = "http://localhost:63744/api/location/";
+var URL_KLANT = "http://localhost:63744/api/klant/";
 
 var utilparm = new UtilFindAdresBarParam(); // Get the id from parameter in url bar
 var KLANTID; // utilparm.findGetParameter('klantid');
 var C_LAT = utilparm.findGetParameter('lat');
 var C_LON = utilparm.findGetParameter('lon');
+var ZOOM = utilparm.findGetParameter('zoom');
 
 var COOKIE_EXPR = 20; // Day's
 
@@ -238,6 +240,40 @@ class DeleteLocation
             }
         }
 
+//// SIGN IN klant Class
+class Signin
+{
+    constructor(){}
+
+    signin(url, naam, pwd, email)
+    {
+            var strdata = new CreatePostDataString().createPostDataString("naam", naam, "&");
+                strdata += new CreatePostDataString().createPostDataString("pwd", pwd, "&");
+                strdata += new CreatePostDataString().createPostDataString("email", email, "");
+    
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", url, true);
+                xhr.setRequestHeader('Content-type','application/x-www-form-urlencoded; charset=utf-8');
+                xhr.onload = function () 
+                {
+                    if (xhr.readyState == xhr.DONE && xhr.status == "200") 
+                    {
+                        var strjson = JSON.parse(xhr.response);
+                        strjson = JSON.parse(strjson);
+
+                        // Melding goed of fout....
+
+                        reloadMap();
+                    } 
+                    else 
+                    {
+                        console.log("Error in de verbinding...");
+                    }
+                }
+                xhr.send(strdata);
+    }
+}
+
 //// Modal Class
 class Modal
 {
@@ -273,12 +309,27 @@ class Modal
         return strForm;
     }
 
+    setSigninForm()
+    {
+        var strForm = "<form>";
+        strForm += "<span class=''>Naam</span>";
+        strForm += "<input id='naam' type='text' class='input-txt mrg-bottom'><br>";
+        strForm += "<span class=''>User</span>";
+        strForm += "<input id='email' type='text' class='input-txt mrg-bottom'><br>";
+        strForm += "<span class=''>Password</span>";
+        strForm += "<input id='pwd' type='password' class='input-txt mrg-bottom'>";
+        strForm += "<a id='login' class='input-button mrg-bottom' onclick='SigninThis();'>SignIn</a>";
+        strForm += "</form>";
+
+        return strForm;
+    }
+
     setLogOutButton()
     {
         return "<a id='logout' class='input-button delete-button mrg-bottom' onclick='logOutThis();'>LogOut</a>";
     }
 
-    setDivOverallModal(h3)
+    modalMaker(h3, form)
     {
         var overallDiv = document.getElementById("modal");
         overallDiv.style.height = "100%";
@@ -288,7 +339,7 @@ class Modal
 
             var modalDiv = document.createElement("div");
             modalDiv.className = "modal-modaldiv";
-            modalDiv.innerHTML = this.setCloseX() + this.setH3(h3) + this.setLoginForm() + this.setLogOutButton();
+            modalDiv.innerHTML = this.setCloseX() + this.setH3(h3) + form + this.setLogOutButton();
 
         var modalDivBack = document.createElement("div");
         modalDivBack.className = "modal-modaldiv-backgr";
@@ -300,6 +351,18 @@ class Modal
         this.setEventClose();
     }
 
+    // Login Modal
+    setLoginDivOverallModal(h3)
+    {
+        this.modalMaker(h3, this.setLoginForm());
+    }
+
+    // Signin Modal
+    setSigninDivOverallModal(h3)
+    {
+        this.modalMaker(h3, this.setSigninForm());
+    }
+
     setEventClose()
     {
         document.getElementById("modal_closer").addEventListener("click", function()
@@ -307,12 +370,14 @@ class Modal
             document.getElementById("modal").style.display = "none";
         });
     }
-    setEventOpen()
+    setEventDisplayModal()
     {
-        document.getElementById("modal_closer").addEventListener("click", function()
-        {
-            document.getElementById("modal").style.display = "block";
-        });
+        document.getElementById("modal").style.display = "block";
+    }
+
+    clearModal()
+    {
+        document.getElementById("modal").innerHTML = "";
     }
 }
 
@@ -385,6 +450,18 @@ class Modal
             new Cookie().deleteCookie();
         }
 
+        // SignIn Member
+        signinMember()
+        {
+            var naam = crHinput.getInputValue("naam");
+            var pwd = crHinput.getInputValue("pwd");
+            var email = crHinput.getInputValue("email");
+
+            new Signin().signin(URL_KLANT, naam, pwd, email);
+
+            // reloadMap();
+        }
+
         checkIfFormInputEmpty(value, altrnValue)
         {
             if( value == "" )
@@ -417,9 +494,38 @@ class Modal
         new XtraJs().logoutMember();
     }
 
+    function SigninThis()
+    {
+        new XtraJs().signinMember();
+    }
+
+    // Modal functions Events
+    var loginModalOn = 0;
     function logInModalThis()
     {
-        new Modal().setDivOverallModal("Login");
+        var modal = new Modal();
+        modal.clearModal();
+
+        if(loginModalOn == 0)
+            modal.setLoginDivOverallModal("Login");
+        else
+            modal.setLoginDivOverallModal("Login");
+            modal.setEventDisplayModal();
+        loginModalOn++;
+    }
+
+    var signinModalOn = 0;
+    function SignInModalThis()
+    {
+        var modal = new Modal();
+        modal.clearModal();
+
+        if(signinModalOn == 0)
+            modal.setSigninDivOverallModal("SignIn");
+        else
+            modal.setSigninDivOverallModal("SignIn");
+            modal.setEventDisplayModal();
+        signinModalOn++;
     }
 
     function reloadMap()
@@ -428,5 +534,6 @@ class Modal
         // window.location.href = "index.html?klantid=" + KLANTID + "&" +
         window.location.href = "index.html?" + 
         "lat=" + crHinput.getInputValue("C_HLAT") + "&" +
-        "lon=" + crHinput.getInputValue("C_HLON");
+        "lon=" + crHinput.getInputValue("C_HLON") + "&" +
+        "zoom=" + crHinput.getInputValue("zoom");
     }

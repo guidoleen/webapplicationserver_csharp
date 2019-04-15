@@ -9,11 +9,12 @@ import { Navigation } from './navigation';
 
 class Main
 {
-    constructor(jsonAdres, C_lat, C_lon)
+    constructor(jsonAdres, C_lat, C_lon, zoom)
     {
         this.jsonAdres = jsonAdres;
         this.C_lon = C_lon;
         this.C_lat = C_lat;
+        this.zoom = zoom;
     }
 
     // Open Street Map class and put markers there
@@ -21,9 +22,10 @@ class Main
     {
         var c_lat = this.IsEmpty(this.C_lat) ? 52 : this.C_lat;
         var c_lon = this.IsEmpty(this.C_lon) ? 5 : this.C_lon;
+        var zoom = this.IsEmpty(this.zoom) ? 8 : this.zoom;
 
         var osmap = new OsmapStart(); 
-        osmap.setupOSMap(this.jsonAdres, "osmap", parseFloat(c_lon), parseFloat(c_lat), 8);
+        osmap.setupOSMap(this.jsonAdres, "osmap", parseFloat(c_lon), parseFloat(c_lat), parseInt(zoom));
     }
 
     setupHiddenInputs(klantid)
@@ -41,6 +43,7 @@ class Main
          crInput.createHiddenInput("insert", -1);
          crInput.createHiddenInput("C_HLAT", 0);
          crInput.createHiddenInput("C_HLON", 0);
+         crInput.createHiddenInput("zoom", 0);
          crInput.createHiddenInput("sessionid", 0);
          crInput.createHiddenInput("sessiontoken", 0);
     }
@@ -55,7 +58,9 @@ class Main
             var navigate = new Navigation({
                 El: "nav",
                 logo: objLogo,
-                NavList: [{val: "LogIn", call: "logInModalThis();"}]
+                NavList: [{val: "LogIn", call: "logInModalThis();"},
+                        {val: "SignIn", call: "SignInModalThis();"}
+                        ]
             });
             navigate.setNavigationBar();
         }
@@ -80,7 +85,7 @@ class Main
 
 // Call the main class and setup the different elements
 KLANTID = new Cookie().getCookie("klantid");
-var m = new Main(URL + KLANTID + "/1/1", C_LAT, C_LON);
+var m = new Main(URL + KLANTID + "/1/1", C_LAT, C_LON, ZOOM);
 m.setupOSMapOnPage();
 m.setupHiddenInputs(KLANTID);
 m.setUpNavigation();

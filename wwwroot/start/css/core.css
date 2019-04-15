@@ -211,7 +211,7 @@ html, body
   .modal-overall
   {
     width: 100%;
-    height: 100%;
+    height: 0%;
     position: absolute;
     top: 0px;
     left: 0px;

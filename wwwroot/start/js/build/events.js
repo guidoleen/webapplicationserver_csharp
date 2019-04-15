@@ -299,11 +299,17 @@ class Modal
     setLoginForm()
     {
         var strForm = "<form>";
-        strForm += "<span class=''>User</span>";
+        strForm += "<div class='form-container'>";
+        strForm += "<div class='col-2'>User</div>";
+        strForm += "<div class='col-4'>";
         strForm += "<input id='email' type='text' class='input-txt mrg-bottom'><br>";
-        strForm += "<span class=''>Password</span>";
+        strForm += "</div>";
+        strForm += "<div class='col-2'>Password</div>";
+        strForm += "<div class='col-4'>";
         strForm += "<input id='pwd' type='password' class='input-txt mrg-bottom'>";
+        strForm += "</div>";
         strForm += "<a id='login' class='input-button mrg-bottom' onclick='loginThis();'>Login</a>";
+        strForm += "</div>";
         strForm += "</form>";
 
         return strForm;
@@ -312,13 +318,21 @@ class Modal
     setSigninForm()
     {
         var strForm = "<form>";
-        strForm += "<span class=''>Naam</span>";
+        strForm += "<div class='form-container'>";
+        strForm += "<div class='col-2'>Naam</div>";
+        strForm += "<div class='col-4'>";
         strForm += "<input id='naam' type='text' class='input-txt mrg-bottom'><br>";
-        strForm += "<span class=''>User</span>";
+        strForm += "</div>";
+        strForm += "<div class='col-2'>Email</div>";
+        strForm += "<div class='col-4'>";
         strForm += "<input id='email' type='text' class='input-txt mrg-bottom'><br>";
-        strForm += "<span class=''>Password</span>";
+        strForm += "</div>";
+        strForm += "<div class='col-2'>Password</div>";
+        strForm += "<div class='col-4'>";
         strForm += "<input id='pwd' type='password' class='input-txt mrg-bottom'>";
+        strForm += "</div>";
         strForm += "<a id='login' class='input-button mrg-bottom' onclick='SigninThis();'>SignIn</a>";
+        strForm += "</div>";
         strForm += "</form>";
 
         return strForm;
@@ -329,7 +343,12 @@ class Modal
         return "<a id='logout' class='input-button delete-button mrg-bottom' onclick='logOutThis();'>LogOut</a>";
     }
 
-    modalMaker(h3, form)
+    setCancelButton()
+    {
+        return "<div class='col-4' style='width: 33%'><a id='cancelmodal' class='input-button delete-button mrg-bottom'>Cancel</a></div>";
+    }
+
+    modalMaker(h3, form, maxH)
     {
         var overallDiv = document.getElementById("modal");
         overallDiv.style.height = "100%";
@@ -339,7 +358,8 @@ class Modal
 
             var modalDiv = document.createElement("div");
             modalDiv.className = "modal-modaldiv";
-            modalDiv.innerHTML = this.setCloseX() + this.setH3(h3) + form + this.setLogOutButton();
+            modalDiv.style.maxHeight = maxH + "px";
+            modalDiv.innerHTML = this.setCloseX() + this.setH3(h3) + form + this.setCancelButton();
 
         var modalDivBack = document.createElement("div");
         modalDivBack.className = "modal-modaldiv-backgr";
@@ -354,13 +374,13 @@ class Modal
     // Login Modal
     setLoginDivOverallModal(h3)
     {
-        this.modalMaker(h3, this.setLoginForm());
+        this.modalMaker(h3, this.setLoginForm(), 250);
     }
 
     // Signin Modal
     setSigninDivOverallModal(h3)
     {
-        this.modalMaker(h3, this.setSigninForm());
+        this.modalMaker(h3, this.setSigninForm(), 300);
     }
 
     setEventClose()
@@ -375,6 +395,13 @@ class Modal
         document.getElementById("modal").style.display = "block";
     }
 
+    setEventCancelModal()
+    {
+        document.getElementById("cancelmodal").addEventListener("click", function()
+        {
+            document.getElementById("modal").style.display = "none";
+        });
+    }
     clearModal()
     {
         document.getElementById("modal").innerHTML = "";
@@ -507,10 +534,16 @@ class Modal
         modal.clearModal();
 
         if(loginModalOn == 0)
+        {
             modal.setLoginDivOverallModal("Login");
+            modal.setEventCancelModal();
+        }
         else
+        {
             modal.setLoginDivOverallModal("Login");
+            modal.setEventCancelModal();
             modal.setEventDisplayModal();
+        }
         loginModalOn++;
     }
 
@@ -521,10 +554,16 @@ class Modal
         modal.clearModal();
 
         if(signinModalOn == 0)
-            modal.setSigninDivOverallModal("SignIn");
+        {
+            modal.setSigninDivOverallModal("Signin");
+            modal.setEventCancelModal();
+        }
         else
-            modal.setSigninDivOverallModal("SignIn");
+        {  
+            modal.setSigninDivOverallModal("Signin");
+            modal.setEventCancelModal();
             modal.setEventDisplayModal();
+        }
         signinModalOn++;
     }
 

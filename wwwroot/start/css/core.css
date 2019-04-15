@@ -171,6 +171,20 @@ html, body
     position:relative;
     top:1px;
   }
+
+  /* FORM ELEMENTS */
+  .form-container
+  {
+    box-sizing: border-box;
+  }
+  .col-2
+  {
+    width: 16,66667%;
+  }
+  .col-4
+  {
+    width: 33,33333%;
+  }
   .input-txt
   {
     border: 0;
@@ -233,6 +247,7 @@ html, body
     border: 1px solid #cccccc;
     bottom: 12px;
     min-width: 280px;
+    max-height: 300px;
     z-index: 3;
     top: 150px;
     /* display: none; */
@@ -255,6 +270,7 @@ html, body
   {
     position: absolute;
     z-index: 10;
+    width: 100%;
   }
   #nav
   {
@@ -267,6 +283,14 @@ html, body
     text-align: center;
     padding: 16px;
     text-decoration: none;
+    z-index: 5;
+    position: absolute;
+  }
+  .a-logo
+  {
+    text-decoration: none;
+    color: #fff;
+    cursor: pointer;
   }
   /* UL */
   .nav-list
@@ -275,6 +299,9 @@ html, body
     margin: 0;
     padding: 0;
     overflow: hidden;
+    right: 0px;
+    position: absolute;
+    z-index: 6;
   }
   /* LI */
   .nav-list-item
@@ -289,4 +316,12 @@ html, body
   .nav-list-item:hover
   {
     color: #008cff;
+  }
+
+  .nav-backgrnd
+  {
+    width: 100%;
+    background: #00ce2d;
+    height: 48px;
+    opacity: 0.6;
   }

@@ -597,7 +597,7 @@
         setNavigationBar()
         {
             var objEl = document.getElementById(this.navInfo.El);
-            objEl.innerHTML = this.createLogo() + this.createNavList();
+            objEl.innerHTML = this.createLogo() + this.createNavList() + this.createBackgrnd();
         }
         createLogo()
         {
@@ -617,6 +617,11 @@
         createLi(strVal, jsCall)
         {
             return "<li class='nav-list-item'><div onclick='" + jsCall + "'>" + strVal + "</div></li>";
+        }
+
+        createBackgrnd()
+        {
+            return "<div class='nav-backgrnd'></div>";
         }
     }
 
@@ -664,7 +669,7 @@
         setUpNavigation()
         {
             var checkId = new Cookie().getCookie("klantid");
-            var objLogo = "WhereAreYouNow?";
+            var objLogo = this.createALogo("index.html", "WhereAreYouNow?");
 
             if( parseInt(checkId) == 0 || checkId == undefined || checkId == '' ) // Logged out
             {
@@ -686,6 +691,11 @@
                 });
                 navigate.setNavigationBar();
             }
+        }
+        // Anchor tag logo
+        createALogo(href, name)
+        {
+            return "<a class='a-logo' href='" + href + "'>" + name + "</a>";
         }
 
         IsEmpty(value)

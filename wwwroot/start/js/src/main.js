@@ -51,7 +51,7 @@ class Main
     setUpNavigation()
     {
         var checkId = new Cookie().getCookie("klantid");
-        var objLogo = "WhereAreYouNow?";
+        var objLogo = this.createALogo("index.html", "WhereAreYouNow?");
 
         if( parseInt(checkId) == 0 || checkId == undefined || checkId == '' ) // Logged out
         {
@@ -73,6 +73,11 @@ class Main
             });
             navigate.setNavigationBar();
         }
+    }
+    // Anchor tag logo
+    createALogo(href, name)
+    {
+        return "<a class='a-logo' href='" + href + "'>" + name + "</a>";
     }
 
     IsEmpty(value)

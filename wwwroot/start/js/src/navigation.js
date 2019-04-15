@@ -7,7 +7,7 @@ export class Navigation
     setNavigationBar()
     {
         var objEl = document.getElementById(this.navInfo.El);
-        objEl.innerHTML = this.createLogo() + this.createNavList();
+        objEl.innerHTML = this.createLogo() + this.createNavList() + this.createBackgrnd();
     }
     createLogo()
     {
@@ -27,5 +27,10 @@ export class Navigation
     createLi(strVal, jsCall)
     {
         return "<li class='nav-list-item'><div onclick='" + jsCall + "'>" + strVal + "</div></li>";
+    }
+
+    createBackgrnd()
+    {
+        return "<div class='nav-backgrnd'></div>";
     }
 }
